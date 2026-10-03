@@ -63,8 +63,7 @@
     .analysis-box,
     .summary-box,
     .roster-display,
-    .stat-box,
-    .card {
+    .stat-box {
       background: rgba(255,255,255,0.55);
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
@@ -124,7 +123,7 @@
       cursor: pointer;
       transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
       font-size: 0.95rem;
-      box-shadow: 0 4px 12px rgba(17, 53, 35, 0.12);
+      box-shadow: 0 4px 12px rgba(17, 53, 34, 0.12);
     }
 
     .filter-btn {
@@ -145,9 +144,22 @@
       filter: brightness(1.03);
     }
 
+    .input-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      margin-bottom: 20px;
+    }
+
+    .simulate-section {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 22px;
+    }
+
     .simulate-button-container {
-      text-align: center;
-      margin: 14px auto 22px;
+      flex-shrink: 0;
     }
 
     .simulate-button-container button {
@@ -156,6 +168,40 @@
       padding: 15px 38px;
       font-size: 1.08rem;
       letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+
+    .status-display {
+      flex: 1;
+      background: rgba(255,255,255,0.55);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      font-family: "Courier New", monospace;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    .status-display.ready {
+      color: var(--green-deep);
+      font-weight: 700;
+    }
+
+    .status-display.success {
+      color: var(--green-deep);
+      font-weight: 700;
+      background: linear-gradient(180deg, rgba(91,189,109,0.1), rgba(91,189,109,0.05));
+      border-color: rgba(91,189,109,0.4);
+    }
+
+    .status-display.error {
+      color: var(--red-deep);
+      font-weight: 700;
+      background: linear-gradient(180deg, rgba(227,93,93,0.1), rgba(227,93,93,0.05));
+      border-color: rgba(227,93,93,0.4);
     }
 
     .app-grid {
@@ -421,59 +467,24 @@
       color: var(--green-deep);
     }
 
-    .nav {
-      display: grid;
-      grid-template-columns: repeat(6, minmax(150px, 1fr));
-      gap: 12px;
-      margin-top: 30px;
-      padding-top: 18px;
-      border-top: 2px solid var(--border);
-    }
-
-    .card {
-      display: inline-flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 92px;
-      text-decoration: none;
-      color: var(--text);
-      border-radius: 14px;
-      padding: 12px 10px;
-      font-weight: 700;
-      text-align: center;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 24px rgba(11, 51, 31, 0.18);
-    }
-
-    .card:nth-child(odd) {
-      background: linear-gradient(180deg, rgba(218,241,227,0.9), rgba(255,255,255,0.75));
-    }
-
-    .card:nth-child(even) {
-      background: linear-gradient(180deg, rgba(236,247,239,0.9), rgba(255,255,255,0.76));
-    }
-
-    .icon {
-      font-size: 1.5rem;
-      margin-bottom: 6px;
-    }
-
     @media (max-width: 980px) {
       .app-grid,
       .analysis-grid,
       .stats-boxes,
       .analysis-row,
-      .nav {
+      .input-controls,
+      .simulate-section {
         grid-template-columns: 1fr;
+        flex-direction: column;
       }
 
-      .nav {
-        grid-template-columns: repeat(2, minmax(150px, 1fr));
+      .simulate-section {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .simulate-button-container button {
+        width: 100%;
       }
     }
 
@@ -487,8 +498,7 @@
       .summary-box,
       .roster-display,
       .analysis-box,
-      .stat-box,
-      .card {
+      .stat-box {
         border-radius: 12px;
       }
 
@@ -505,13 +515,36 @@
         gap: 8px;
       }
 
-      .filter-btn,
+      .filter-btn {
+        padding: 9px 14px;
+        font-size: 0.85rem;
+      }
+
+      .input-controls {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
       .simulate-button-container button {
+        width: 100%;
+        padding: 12px 24px;
+        font-size: 1rem;
+      }
+
+      .simulate-section {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .simulate-button-container {
         width: 100%;
       }
 
-      .nav {
-        grid-template-columns: 1fr;
+      .status-display {
+        width: 100%;
+        font-size: 0.85rem;
+        min-height: 45px;
       }
 
       .summary-box,
@@ -544,14 +577,9 @@
       </div>
     </div>
 
-    <div class="simulate-button-container">
-      <button onclick="simulate()">⚡ SIMULATE ⚡</button>
-    </div>
-
-    <div class="app-grid">
+    <div class="input-controls">
       <div class="column your-clan">
         <div class="column-header">🏰 Your Clan</div>
-
         <div class="panel">
           <div class="input-row">
             <label>Direct Entry:</label>
@@ -559,9 +587,31 @@
           </div>
           <div id="yourClanInputs"></div>
         </div>
-
         <div id="yourClanWarning" class="warning-box"></div>
+      </div>
 
+      <div class="column enemy-clan">
+        <div class="column-header">⚔️ Enemy Clan</div>
+        <div class="panel">
+          <div class="input-row">
+            <label>Direct Entry:</label>
+            <input type="text" id="enemyClanDirect" class="first-row-input" placeholder="1q, 500t, 200t, 100t...">
+          </div>
+          <div id="enemyClanInputs"></div>
+        </div>
+        <div id="enemyClanWarning" class="warning-box"></div>
+      </div>
+    </div>
+
+    <div class="simulate-section">
+      <div class="simulate-button-container">
+        <button onclick="simulate()">⚡ SIMULATE ⚡</button>
+      </div>
+      <div class="status-display ready" id="statusDisplay">Ready to simulate...</div>
+    </div>
+
+    <div class="app-grid">
+      <div class="column your-clan">
         <div class="result-label">📊 Team Summary</div>
         <div class="summary-box" id="yourClanSummary">Ready to simulate...</div>
 
@@ -570,18 +620,6 @@
       </div>
 
       <div class="column enemy-clan">
-        <div class="column-header">⚔️ Enemy Clan</div>
-
-        <div class="panel">
-          <div class="input-row">
-            <label>Direct Entry:</label>
-            <input type="text" id="enemyClanDirect" class="first-row-input" placeholder="1q, 500t, 200t, 100t...">
-          </div>
-          <div id="enemyClanInputs"></div>
-        </div>
-
-        <div id="enemyClanWarning" class="warning-box"></div>
-
         <div class="result-label">📊 Team Summary</div>
         <div class="summary-box" id="enemyClanSummary">Ready to simulate...</div>
 
@@ -664,33 +702,6 @@
         </div>
       </div>
     </div>
-
-    <div class="nav">
-      <a href="https://discord.gg/forgemaster" class="card" target="_blank" rel="noopener noreferrer">
-        <div class="icon">🔨</div>
-        <div>Discord Link</div>
-      </a>
-      <a href="https://ieagalei.github.io/FmDPS/" class="card" target="_blank" rel="noopener noreferrer">
-        <div class="icon">🧮</div>
-        <div>DPS Tool</div>
-      </a>
-      <a href="index.html" class="card">
-        <div class="icon">🛠️</div>
-        <div>Build Finder</div>
-      </a>
-      <a href="calculator.html" class="card">
-        <div class="icon">🧮</div>
-        <div>Number Calculator</div>
-      </a>
-      <a href="forge.html" class="card">
-        <div class="icon">🛠️</div>
-        <div>Forge Maths</div>
-      </a>
-      <a href="research.html" class="card">
-        <div class="icon">🌳</div>
-        <div>Tech Tree Maths</div>
-      </a>
-    </div>
   </div>
 
   <script>
@@ -734,6 +745,12 @@
     ];
 
     const tierVisibility = { t: true, b: true, m: true, k: true };
+
+    function updateStatus(message, type = 'ready') {
+      const status = $('statusDisplay');
+      status.textContent = message;
+      status.className = 'status-display ' + type;
+    }
 
     function initializeInputs() {
       const container1 = $('yourClanInputs');
@@ -1035,61 +1052,85 @@
     }
 
     function simulate() {
-      const yourRoster = parseTeam('your');
-      const enemyRoster = parseTeam('enemy');
+      try {
+        updateStatus('Parsing rosters...', 'ready');
 
-      const yourValidation = sortAndValidate(yourRoster);
-      const enemyValidation = sortAndValidate(enemyRoster);
+        const yourRoster = parseTeam('your');
+        const enemyRoster = parseTeam('enemy');
 
-      const yourWarning = $('yourClanWarning');
-      const enemyWarning = $('enemyClanWarning');
+        if (yourRoster.length === 0 || enemyRoster.length === 0) {
+          updateStatus('❌ Error: Both clans must have at least 1 unit!', 'error');
+          return;
+        }
 
-      if (yourValidation.warning) {
-        yourWarning.textContent = yourValidation.warning;
-        yourWarning.style.display = 'block';
-      } else {
-        yourWarning.style.display = 'none';
+        updateStatus('Validating teams...', 'ready');
+
+        const yourValidation = sortAndValidate(yourRoster);
+        const enemyValidation = sortAndValidate(enemyRoster);
+
+        const yourWarning = $('yourClanWarning');
+        const enemyWarning = $('enemyClanWarning');
+
+        if (yourValidation.warning) {
+          yourWarning.textContent = yourValidation.warning;
+          yourWarning.style.display = 'block';
+        } else {
+          yourWarning.style.display = 'none';
+        }
+
+        if (enemyValidation.warning) {
+          enemyWarning.textContent = enemyValidation.warning;
+          enemyWarning.style.display = 'block';
+        } else {
+          enemyWarning.style.display = 'none';
+        }
+
+        updateStatus('Calculating scores...', 'ready');
+
+        const yourFinal = assignScores(yourValidation.roster);
+        const enemyFinal = assignScores(enemyValidation.roster);
+
+        $('yourClanSummary').textContent = getSummary(yourFinal);
+        $('enemyClanSummary').textContent = getSummary(enemyFinal);
+        $('yourClanRoster').textContent = formatRoster(yourFinal);
+        $('enemyClanRoster').textContent = formatRoster(enemyFinal);
+
+        updateStatus('Analyzing members...', 'ready');
+
+        const yourAnalysis = analyzeMembers(yourFinal, enemyFinal);
+        const enemyAnalysis = analyzeMembers(enemyFinal, yourFinal);
+
+        $('yourClanCritical').textContent = formatAnalysis(yourAnalysis.critical);
+        $('yourClanUseful').textContent = formatAnalysis(yourAnalysis.useful);
+        $('yourClanUseless').textContent = formatAnalysis(yourAnalysis.useless);
+
+        $('enemyClanCritical').textContent = formatAnalysis(enemyAnalysis.critical);
+        $('enemyClanUseful').textContent = formatAnalysis(enemyAnalysis.useful);
+        $('enemyClanUseless').textContent = formatAnalysis(enemyAnalysis.useless);
+
+        updateStatus('Estimating resets...', 'ready');
+
+        const yourResetEst = calculateResetEstimate(yourFinal, enemyFinal);
+        const enemyResetEst = calculateResetEstimate(enemyFinal, yourFinal);
+
+        $('yourResetEstimate').textContent = `${yourResetEst}`;
+        $('enemyResetEstimate').textContent = `${enemyResetEst}`;
+
+        updateStatus('Running battle simulation...', 'ready');
+
+        const yourBattle = simulateBattle(yourFinal, enemyFinal);
+        const enemyBattle = simulateBattle(enemyFinal, yourFinal);
+
+        $('yourSimResets').textContent = yourBattle.resets;
+        $('yourSimScore').textContent = yourBattle.score;
+        $('enemySimResets').textContent = enemyBattle.resets;
+        $('enemySimScore').textContent = enemyBattle.score;
+
+        updateStatus('✅ Simulation complete!', 'success');
+      } catch (error) {
+        updateStatus('❌ Error: ' + error.message, 'error');
+        console.error(error);
       }
-
-      if (enemyValidation.warning) {
-        enemyWarning.textContent = enemyValidation.warning;
-        enemyWarning.style.display = 'block';
-      } else {
-        enemyWarning.style.display = 'none';
-      }
-
-      const yourFinal = assignScores(yourValidation.roster);
-      const enemyFinal = assignScores(enemyValidation.roster);
-
-      $('yourClanSummary').textContent = getSummary(yourFinal);
-      $('enemyClanSummary').textContent = getSummary(enemyFinal);
-      $('yourClanRoster').textContent = formatRoster(yourFinal);
-      $('enemyClanRoster').textContent = formatRoster(enemyFinal);
-
-      const yourAnalysis = analyzeMembers(yourFinal, enemyFinal);
-      const enemyAnalysis = analyzeMembers(enemyFinal, yourFinal);
-
-      $('yourClanCritical').textContent = formatAnalysis(yourAnalysis.critical);
-      $('yourClanUseful').textContent = formatAnalysis(yourAnalysis.useful);
-      $('yourClanUseless').textContent = formatAnalysis(yourAnalysis.useless);
-
-      $('enemyClanCritical').textContent = formatAnalysis(enemyAnalysis.critical);
-      $('enemyClanUseful').textContent = formatAnalysis(enemyAnalysis.useful);
-      $('enemyClanUseless').textContent = formatAnalysis(enemyAnalysis.useless);
-
-      const yourResetEst = calculateResetEstimate(yourFinal, enemyFinal);
-      const enemyResetEst = calculateResetEstimate(enemyFinal, yourFinal);
-
-      $('yourResetEstimate').textContent = `${yourResetEst}`;
-      $('enemyResetEstimate').textContent = `${enemyResetEst}`;
-
-      const yourBattle = simulateBattle(yourFinal, enemyFinal);
-      const enemyBattle = simulateBattle(enemyFinal, yourFinal);
-
-      $('yourSimResets').textContent = yourBattle.resets;
-      $('yourSimScore').textContent = yourBattle.score;
-      $('enemySimResets').textContent = enemyBattle.resets;
-      $('enemySimScore').textContent = enemyBattle.score;
     }
 
     initializeInputs();
