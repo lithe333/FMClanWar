@@ -45,7 +45,7 @@
     }
 
     .page {
-      max-width: 1460px;
+      max-width: 1600px;
       margin: 0 auto;
     }
 
@@ -63,7 +63,8 @@
     .analysis-box,
     .summary-box,
     .roster-display,
-    .stat-box {
+    .stat-box,
+    .chart-box {
       background: rgba(255,255,255,0.55);
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
@@ -374,7 +375,8 @@
     .summary-box,
     .roster-display,
     .analysis-box,
-    .stat-box {
+    .stat-box,
+    .chart-box {
       border-radius: 14px;
       background: linear-gradient(180deg, rgba(255,255,255,0.78), rgba(245,250,246,0.75));
       border: 1px solid var(--border);
@@ -411,20 +413,20 @@
       letter-spacing: 0.04em;
     }
 
-    .analysis-dual-grid {
+    .analysis-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 40px;
       margin-bottom: 20px;
     }
 
-    .analysis-column {
+    .analysis-side {
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
 
-    .analysis-column-title {
+    .analysis-side-title {
       font-size: 1.2rem;
       font-weight: 800;
       padding: 12px 14px;
@@ -432,22 +434,102 @@
       text-align: center;
     }
 
-    .your-clan-analysis .analysis-column-title {
+    .your-clan-side .analysis-side-title {
       background: linear-gradient(180deg, var(--blue-soft), #e8f2ff);
       color: var(--blue-deep);
       border: 1px solid rgba(42, 122, 226, 0.4);
     }
 
-    .enemy-clan-analysis .analysis-column-title {
+    .enemy-clan-side .analysis-side-title {
       background: linear-gradient(180deg, var(--red-soft), #ffe8e8);
       color: var(--red-deep);
       border: 1px solid rgba(227, 93, 93, 0.4);
     }
 
-    .analysis-row {
+    .critical-values {
+      background: rgba(255,255,255,0.55);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-family: "Courier New", monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    .critical-value-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+    }
+
+    .critical-value-label {
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .critical-value-number {
+      font-weight: 800;
+      color: var(--red-deep);
+      min-width: 50px;
+      text-align: right;
+    }
+
+    .chart-box {
+      padding: 16px;
+      min-height: 280px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      gap: 8px;
+      overflow-x: auto;
+      position: relative;
+    }
+
+    .chart-bar {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      align-items: center;
+      gap: 4px;
+      min-width: 24px;
+    }
+
+    .chart-bar-fill {
+      width: 20px;
+      background: linear-gradient(180deg, rgba(42, 122, 226, 0.9), rgba(42, 122, 226, 0.6));
+      border-radius: 4px 4px 0 0;
+      transition: background 0.2s ease;
+      position: relative;
+    }
+
+    .enemy-clan-side .chart-bar-fill {
+      background: linear-gradient(180deg, rgba(227, 93, 93, 0.9), rgba(227, 93, 93, 0.6));
+    }
+
+    .chart-bar-fill.critical {
+      background: linear-gradient(180deg, #ff6b6b, #e35d5d) !important;
+      box-shadow: 0 0 8px rgba(227, 93, 93, 0.6);
+    }
+
+    .chart-bar-label {
+      font-size: 0.7rem;
+      color: var(--text);
+      font-weight: 700;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      white-space: nowrap;
+      transform: rotate(180deg);
+      height: 40px;
+    }
+
+    .chart-threshold-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, var(--gold) 0, var(--gold) 4px, transparent 4px, transparent 8px);
+      z-index: 10;
     }
 
     .analysis-box {
@@ -472,11 +554,6 @@
       background: linear-gradient(180deg, rgba(255,250,236,0.8), rgba(255,248,235,0.82));
     }
 
-    .analysis-box.useless {
-      border-left: 6px solid #8a8f94;
-      background: linear-gradient(180deg, rgba(245,245,245,0.8), rgba(240,242,244,0.82));
-    }
-
     .analysis-title {
       font-size: 0.9rem;
       font-weight: 800;
@@ -486,19 +563,33 @@
 
     .analysis-box.critical .analysis-title { color: var(--red-deep); }
     .analysis-box.useful .analysis-title { color: #8d6000; }
-    .analysis-box.useless .analysis-title { color: #5a5a5a; }
 
-    .stats-dual-grid {
+    .stats-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 40px;
       margin-top: 18px;
     }
 
-    .stats-column {
+    .stat-column {
       display: flex;
       flex-direction: column;
       gap: 12px;
+    }
+
+    .stat-column-title {
+      font-weight: 800;
+      text-align: center;
+      padding: 8px 0;
+      font-size: 1.1rem;
+    }
+
+    .your-clan-stat .stat-column-title {
+      color: var(--blue-deep);
+    }
+
+    .enemy-clan-stat .stat-column-title {
+      color: var(--red-deep);
     }
 
     .stats-boxes {
@@ -526,16 +617,18 @@
       color: var(--green-deep);
     }
 
-    @media (max-width: 980px) {
-      .input-controls,
-      .analysis-dual-grid,
-      .stats-dual-grid {
+    @media (max-width: 1200px) {
+      .analysis-container,
+      .stats-container {
         grid-template-columns: 1fr;
         gap: 22px;
       }
+    }
 
-      .simulate-section {
-        grid-column: auto;
+    @media (max-width: 980px) {
+      .input-controls {
+        grid-template-columns: 1fr;
+        gap: 22px;
       }
 
       .simulate-button-container button {
@@ -553,7 +646,8 @@
       .summary-box,
       .roster-display,
       .analysis-box,
-      .stat-box {
+      .stat-box,
+      .chart-box {
         border-radius: 12px;
       }
 
@@ -603,8 +697,8 @@
         font-size: 0.76rem;
       }
 
-      .analysis-dual-grid,
-      .stats-dual-grid {
+      .analysis-container,
+      .stats-container {
         grid-template-columns: 1fr;
         gap: 16px;
       }
@@ -618,7 +712,7 @@
     <div class="instructions">
       <h2>📋 Instructions</h2>
       <p><strong>Enter each team power score using one of two methods:</strong></p>
-      <p>1️⃣ <strong>Direct Entry:</strong> Use the top row to enter comma-separated power values (e.g., "1q, 500t, 200t, 100t, 50t")</p>
+      <p>1️⃣ <strong>Direct Entry:</strong> Use the top row to enter comma-separated power values (e.g., "600t, 100t, 15t, 5t, 3t")</p>
       <p>2️⃣ <strong>Count Entry:</strong> Leave the top row empty and use the rows below to enter counts for each power tier</p>
       <p>⚠️ <strong>Note:</strong> If the top row contains values, all other inputs are ignored</p>
     </div>
@@ -685,41 +779,78 @@
     </div>
 
     <div class="analysis-section">
-      <h2 class="analysis-header">📈 Member Analysis</h2>
-      <div class="analysis-dual-grid">
-        <div class="analysis-column your-clan-analysis">
-          <div class="analysis-column-title">🏰 Your Clan Analysis</div>
-          <div class="analysis-row">
-            <div class="analysis-box critical">
-              <div class="analysis-title">🔴 CRITICAL</div>
-              <div id="yourClanCritical">Members to be determined...</div>
+      <h2 class="analysis-header">📈 Strategic Analysis</h2>
+      
+      <div class="analysis-container">
+        <div class="analysis-side your-clan-side">
+          <div class="analysis-side-title">🏰 Your Clan vs Enemy</div>
+          
+          <div class="critical-values">
+            <div class="critical-value-row">
+              <div class="critical-value-label">Attacker Critical</div>
+              <div class="critical-value-number" id="yourAttackerCritical">-</div>
             </div>
-            <div class="analysis-box useful">
-              <div class="analysis-title">🟠 USEFUL</div>
-              <div id="yourClanUseful">Members to be determined...</div>
+            <div class="critical-value-row">
+              <div class="critical-value-label">Target Critical</div>
+              <div class="critical-value-number" id="yourTargetCritical">-</div>
             </div>
-            <div class="analysis-box useless">
-              <div class="analysis-title">⚪ USELESS</div>
-              <div id="yourClanUseless">Members to be determined...</div>
+            <div class="critical-value-row">
+              <div class="critical-value-label">Reset Threshold</div>
+              <div class="critical-value-number" id="yourResetThreshold">-</div>
             </div>
+          </div>
+
+          <div class="result-label">Member Strength Distribution</div>
+          <div class="chart-box" id="yourChart">
+            <div style="text-align: center; color: var(--muted); width: 100%;">Chart loading...</div>
+          </div>
+
+          <div class="result-label">Viable Members</div>
+          <div class="analysis-box useful">
+            <div class="analysis-title">✅ CAN DEFEAT TARGETS</div>
+            <div id="yourClanUseful">Members to be determined...</div>
+          </div>
+
+          <div class="result-label">Non-Viable Members</div>
+          <div class="analysis-box">
+            <div class="analysis-title">❌ CANNOT DEFEAT TARGETS</div>
+            <div id="yourClanUseless">Members to be determined...</div>
           </div>
         </div>
 
-        <div class="analysis-column enemy-clan-analysis">
-          <div class="analysis-column-title">⚔️ Enemy Clan Analysis</div>
-          <div class="analysis-row">
-            <div class="analysis-box critical">
-              <div class="analysis-title">🔴 CRITICAL</div>
-              <div id="enemyClanCritical">Members to be determined...</div>
+        <div class="analysis-side enemy-clan-side">
+          <div class="analysis-side-title">⚔️ Enemy Clan vs You</div>
+          
+          <div class="critical-values">
+            <div class="critical-value-row">
+              <div class="critical-value-label">Attacker Critical</div>
+              <div class="critical-value-number" id="enemyAttackerCritical">-</div>
             </div>
-            <div class="analysis-box useful">
-              <div class="analysis-title">🟠 USEFUL</div>
-              <div id="enemyClanUseful">Members to be determined...</div>
+            <div class="critical-value-row">
+              <div class="critical-value-label">Target Critical</div>
+              <div class="critical-value-number" id="enemyTargetCritical">-</div>
             </div>
-            <div class="analysis-box useless">
-              <div class="analysis-title">⚪ USELESS</div>
-              <div id="enemyClanUseless">Members to be determined...</div>
+            <div class="critical-value-row">
+              <div class="critical-value-label">Reset Threshold</div>
+              <div class="critical-value-number" id="enemyResetThreshold">-</div>
             </div>
+          </div>
+
+          <div class="result-label">Member Strength Distribution</div>
+          <div class="chart-box" id="enemyChart">
+            <div style="text-align: center; color: var(--muted); width: 100%;">Chart loading...</div>
+          </div>
+
+          <div class="result-label">Viable Members</div>
+          <div class="analysis-box useful">
+            <div class="analysis-title">✅ CAN DEFEAT TARGETS</div>
+            <div id="enemyClanUseful">Members to be determined...</div>
+          </div>
+
+          <div class="result-label">Non-Viable Members</div>
+          <div class="analysis-box">
+            <div class="analysis-title">❌ CANNOT DEFEAT TARGETS</div>
+            <div id="enemyClanUseless">Members to be determined...</div>
           </div>
         </div>
       </div>
@@ -727,9 +858,9 @@
 
     <div class="analysis-section">
       <h2 class="analysis-header">🎯 Battle Estimates</h2>
-      <div class="stats-dual-grid">
-        <div class="stats-column">
-          <div style="font-weight: 800; color: var(--blue-deep); text-align: center; padding: 8px 0;">🏰 Your Clan</div>
+      <div class="stats-container">
+        <div class="stat-column your-clan-stat">
+          <div class="stat-column-title">🏰 Your Clan</div>
           <div class="stats-boxes">
             <div class="stat-box">
               <div class="stat-label">Enemy Resets Est.</div>
@@ -737,8 +868,8 @@
             </div>
           </div>
         </div>
-        <div class="stats-column">
-          <div style="font-weight: 800; color: var(--red-deep); text-align: center; padding: 8px 0;">⚔️ Enemy Clan</div>
+        <div class="stat-column enemy-clan-stat">
+          <div class="stat-column-title">⚔️ Enemy Clan</div>
           <div class="stats-boxes">
             <div class="stat-box">
               <div class="stat-label">Your Resets Est.</div>
@@ -751,9 +882,9 @@
 
     <div class="analysis-section">
       <h2 class="analysis-header">⚡ Simulation Results</h2>
-      <div class="stats-dual-grid">
-        <div class="stats-column">
-          <div style="font-weight: 800; color: var(--blue-deep); text-align: center; padding: 8px 0;">🏰 Your Clan</div>
+      <div class="stats-container">
+        <div class="stat-column your-clan-stat">
+          <div class="stat-column-title">🏰 Your Clan</div>
           <div class="stats-boxes">
             <div class="stat-box">
               <div class="stat-label">Resets</div>
@@ -765,8 +896,8 @@
             </div>
           </div>
         </div>
-        <div class="stats-column">
-          <div style="font-weight: 800; color: var(--red-deep); text-align: center; padding: 8px 0;">⚔️ Enemy Clan</div>
+        <div class="stat-column enemy-clan-stat">
+          <div class="stat-column-title">⚔️ Enemy Clan</div>
           <div class="stats-boxes">
             <div class="stat-box">
               <div class="stat-label">Resets</div>
@@ -868,14 +999,12 @@
     function parseDirectInput(input) {
       if (!input.trim()) return [];
 
-      // Split by comma, trim whitespace, convert to lowercase for matching
       const entries = input.split(',').map(e => e.trim().toLowerCase()).filter(e => e.length > 0);
       const roster = [];
 
       for (let entry of entries) {
         let found = false;
-        
-        // Try to match against power tier names (case-insensitive)
+
         for (let tier of powerTiers) {
           if (entry === tier.name.toLowerCase()) {
             roster.push({ tier: tier.name, value: tier.value });
@@ -884,7 +1013,6 @@
           }
         }
 
-        // If not found as a tier name, try to parse as a number
         if (!found) {
           const num = parseFloat(entry);
           if (!isNaN(num) && num > 0) {
@@ -1010,6 +1138,81 @@
       return num.toFixed(0);
     }
 
+    function createChart(roster, defenderRoster, containerId, isSelf) {
+      if (roster.length === 0) {
+        $(containerId).innerHTML = '<div style="text-align: center; color: var(--muted); width: 100%;">No data</div>';
+        return;
+      }
+
+      const resetReq = getResetRequirement(defenderRoster.length);
+      const thresholdIndex = Math.max(0, roster.length - resetReq);
+
+      let maxScore = Math.max(...roster.map(u => u.score), 1);
+      let chartHTML = '';
+
+      for (let i = 0; i < Math.min(roster.length, 30); i++) {
+        const unit = roster[i];
+        const heightPercent = (unit.score / maxScore) * 100;
+        const isCritical = i < thresholdIndex;
+
+        chartHTML += `<div class="chart-bar">
+          <div class="chart-bar-fill ${isCritical ? 'critical' : ''}" style="height: ${heightPercent}px;" title="Score: ${unit.score}"></div>
+          <div class="chart-bar-label">${unit.score}</div>
+        </div>`;
+      }
+
+      $(containerId).innerHTML = chartHTML;
+    }
+
+    function analyzeMembers(roster, enemyRoster) {
+      if (roster.length === 0) {
+        return { viable: [], nonViable: [], attackerCritical: 0, targetCritical: 0 };
+      }
+
+      const resetReq = getResetRequirement(roster.length);
+      const enemyResetReq = getResetRequirement(enemyRoster.length);
+      
+      // Attacker critical: first unit that can beat weakest enemy that needs to be beaten for reset
+      const enemyEffective = enemyRoster.slice(-enemyResetReq);
+      const weakestEnemy = enemyEffective[0];
+      
+      let attackerCritical = 0;
+      for (let unit of roster) {
+        if (weakestEnemy && unit.value > weakestEnemy.value) {
+          attackerCritical = unit.score;
+          break;
+        }
+      }
+
+      // Target critical: offset by reset threshold (members beyond the reset threshold)
+      const targetOffset = Math.max(0, roster.length - resetReq);
+      const targetCritical = roster.length > targetOffset ? roster[targetOffset].score : 0;
+
+      const viable = [];
+      const nonViable = [];
+
+      for (let unit of roster) {
+        const canBeatWeakest = weakestEnemy && unit.value > weakestEnemy.value;
+        if (canBeatWeakest) {
+          viable.push(unit);
+        } else {
+          nonViable.push(unit);
+        }
+      }
+
+      return { viable, nonViable, attackerCritical, targetCritical };
+    }
+
+    function formatAnalysis(members) {
+      if (members.length === 0) return 'None';
+
+      let output = '';
+      for (let i = 0; i < members.length; i++) {
+        output += `${i + 1}. ${members[i].tier} (Score: ${members[i].score})\n`;
+      }
+      return output;
+    }
+
     function simulateBattle(attackerRoster, defenderRoster) {
       const attackerCount = attackerRoster.length;
       const defenderCount = defenderRoster.length;
@@ -1094,53 +1297,6 @@
       return { resets: totalResets, score: totalScore };
     }
 
-    function analyzeMembers(roster, enemyRoster) {
-      if (roster.length === 0) {
-        return { critical: [], useful: [], useless: [] };
-      }
-
-      const resetReq = getResetRequirement(roster.length);
-      const enemyEffective = enemyRoster.slice(-resetReq);
-
-      let criticalThreshold = null;
-      for (let i = 0; i < roster.length; i++) {
-        const member = roster[i];
-        const canBeat = enemyEffective.some(e => e.value < member.value);
-        if (canBeat && criticalThreshold === null) {
-          criticalThreshold = member;
-          break;
-        }
-      }
-
-      const critical = [];
-      const useful = [];
-      const useless = [];
-
-      for (let member of roster) {
-        const canBeatAnyone = enemyRoster.some(e => e.value < member.value);
-
-        if (!canBeatAnyone) {
-          useless.push(member);
-        } else if (criticalThreshold && member.value >= criticalThreshold.value) {
-          critical.push(member);
-        } else if (canBeatAnyone) {
-          useful.push(member);
-        }
-      }
-
-      return { critical, useful, useless };
-    }
-
-    function formatAnalysis(members) {
-      if (members.length === 0) return 'None';
-
-      let output = '';
-      for (let i = 0; i < members.length; i++) {
-        output += `${i + 1}. ${members[i].tier} (Score: ${members[i].score})\n`;
-      }
-      return output;
-    }
-
     function simulate() {
       try {
         updateStatus('Parsing rosters...', 'ready');
@@ -1190,13 +1346,21 @@
         const yourAnalysis = analyzeMembers(yourFinal, enemyFinal);
         const enemyAnalysis = analyzeMembers(enemyFinal, yourFinal);
 
-        $('yourClanCritical').textContent = formatAnalysis(yourAnalysis.critical);
-        $('yourClanUseful').textContent = formatAnalysis(yourAnalysis.useful);
-        $('yourClanUseless').textContent = formatAnalysis(yourAnalysis.useless);
+        $('yourClanUseful').textContent = formatAnalysis(yourAnalysis.viable);
+        $('yourClanUseless').textContent = formatAnalysis(yourAnalysis.nonViable);
+        $('enemyClanUseful').textContent = formatAnalysis(enemyAnalysis.viable);
+        $('enemyClanUseless').textContent = formatAnalysis(enemyAnalysis.nonViable);
 
-        $('enemyClanCritical').textContent = formatAnalysis(enemyAnalysis.critical);
-        $('enemyClanUseful').textContent = formatAnalysis(enemyAnalysis.useful);
-        $('enemyClanUseless').textContent = formatAnalysis(enemyAnalysis.useless);
+        $('yourAttackerCritical').textContent = yourAnalysis.attackerCritical || '—';
+        $('yourTargetCritical').textContent = yourAnalysis.targetCritical || '—';
+        $('yourResetThreshold').textContent = getResetRequirement(enemyFinal.length);
+
+        $('enemyAttackerCritical').textContent = enemyAnalysis.attackerCritical || '—';
+        $('enemyTargetCritical').textContent = enemyAnalysis.targetCritical || '—';
+        $('enemyResetThreshold').textContent = getResetRequirement(yourFinal.length);
+
+        createChart(yourFinal, enemyFinal, 'yourChart', true);
+        createChart(enemyFinal, yourFinal, 'enemyChart', false);
 
         updateStatus('Estimating resets...', 'ready');
 
