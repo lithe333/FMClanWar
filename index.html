@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FM Clan War Calculator</title>
+  <style>
+    :root {
+      --bg: #edf7ef;
+      --bg-2: #dfeee3;
+      --panel: #f7fff9;
+      --panel-strong: #e7f6eb;
+      --card: #f2fbf4;
+      --border: #a9d8b4;
+      --green: #5bbd6d;
+      --green-deep: #1d5a3d;
+      --green-ink: #0d2d1d;
+      --blue: #2a7ae2;
+      --blue-soft: #dfeeff;
+      --blue-deep: #184a97;
+      --red: #e35d5d;
+      --red-soft: #ffe5e5;
+      --red-deep: #8c2a2a;
+      --text: #153123;
+      --muted: #53715f;
+      --gold: #f0b94d;
+      --shadow: 0 12px 30px rgba(9, 51, 34, 0.12);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      color: var(--text);
+    }
+
+    body {
+      padding: 22px 18px 36px;
+    }
+
+    .page {
+      max-width: 1460px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-size: clamp(2rem, 3vw, 3.1rem);
+      letter-spacing: 0.04em;
+      color: var(--green-ink);
+      text-align: center;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.9);
+    }
+
+    .instructions,
+    .panel,
+    .analysis-box,
+    .summary-box,
+    .roster-display,
+    .stat-box,
+    .card {
+      background: rgba(255,255,255,0.55);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .instructions {
+      padding: 18px 20px;
+      border-radius: var(--radius);
+      border-left: 6px solid var(--green);
+      background: linear-gradient(180deg, rgba(255,255,255,0.72), rgba(242,251,244,0.8));
+      margin-bottom: 20px;
+    }
+
+    .instructions h2 {
+      margin: 0 0 10px;
+      color: var(--green-deep);
+      font-size: clamp(1.1rem, 2vw, 1.5rem);
+    }
+
+    .instructions p {
+      margin: 6px 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    .instructions strong {
+      color: var(--green-ink);
+    }
+
+    .filter-wrap {
+      text-align: center;
+      margin: 18px auto 10px;
+      padding: 16px 10px 2px;
+    }
+
+    .filter-wrap h3 {
+      margin: 0 0 12px;
+      color: var(--green-deep);
+      font-size: 1.1rem;
+    }
+
+    .filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .filter-btn,
+    button {
+      appearance: none;
+      border: none;
+      border-radius: 12px;
+      padding: 11px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 12px rgba(17, 53, 35, 0.12);
+    }
+
+    .filter-btn {
+      background: linear-gradient(180deg, #f5fff7, #d9f1df);
+      color: var(--green-ink);
+      border: 1px solid var(--border);
+    }
+
+    .filter-btn.active {
+      background: linear-gradient(180deg, var(--green), #6ddf85);
+      color: #072b18;
+      border-color: rgba(16, 53, 37, 0.25);
+    }
+
+    .filter-btn:hover,
+    button:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.03);
+    }
+
+    .simulate-button-container {
+      text-align: center;
+      margin: 14px auto 22px;
+    }
+
+    .simulate-button-container button {
+      background: linear-gradient(180deg, var(--green), #73d77c);
+      color: #072b18;
+      padding: 15px 38px;
+      font-size: 1.08rem;
+      letter-spacing: 0.06em;
+    }
+
+    .app-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .column-header {
+      font-size: clamp(1.3rem, 2vw, 1.9rem);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .your-clan .column-header {
+      background: linear-gradient(180deg, var(--blue-soft), #dfeeff);
+      color: var(--blue-deep);
+      border-color: rgba(42, 122, 226, 0.55);
+    }
+
+    .enemy-clan .column-header {
+      background: linear-gradient(180deg, var(--red-soft), #ffe7e7);
+      color: var(--red-deep);
+      border-color: rgba(227, 93, 93, 0.6);
+    }
+
+    .panel {
+      padding: 18px;
+      border-radius: var(--radius);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .your-clan .panel {
+      border-left: 7px solid var(--blue);
+      background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(222,238,255,0.75));
+    }
+
+    .enemy-clan .panel {
+      border-left: 7px solid var(--red);
+      background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,233,233,0.78));
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .input-row label {
+      font-weight: 700;
+      color: var(--green-deep);
+      font-size: 0.88rem;
+    }
+
+    .power-label {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(91, 189, 109, 0.12);
+      border: 1px solid rgba(29, 90, 61, 0.25);
+      color: var(--green-deep);
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    .input-row input {
+      width: 100%;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-family: "Courier New", monospace;
+      font-size: 0.96rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .your-clan .input-row input {
+      border-color: rgba(42, 122, 226, 0.45);
+      background: linear-gradient(180deg, #fbfdff, #eef6ff);
+    }
+
+    .enemy-clan .input-row input {
+      border-color: rgba(227, 93, 93, 0.45);
+      background: linear-gradient(180deg, #fffdfd, #fff0f0);
+    }
+
+    .input-row input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(91, 189, 109, 0.18);
+    }
+
+    .first-row-input {
+      background: linear-gradient(180deg, #f7fff7, #edf8f0) !important;
+      border-color: rgba(91, 189, 109, 0.7) !important;
+    }
+
+    .tier-section {
+      display: none;
+    }
+
+    .tier-section.visible {
+      display: block;
+    }
+
+    .warning-box {
+      display: none;
+      margin-top: 12px;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.94rem;
+      font-weight: 700;
+      border-left: 5px solid var(--red);
+      background: rgba(227, 93, 93, 0.08);
+      color: var(--red-deep);
+    }
+
+    .result-label {
+      margin: 6px 0 8px;
+      font-weight: 800;
+      font-size: 0.98rem;
+      letter-spacing: 0.04em;
+    }
+
+    .your-clan .result-label {
+      color: var(--blue-deep);
+    }
+
+    .enemy-clan .result-label {
+      color: var(--red-deep);
+    }
+
+    .summary-box,
+    .roster-display,
+    .analysis-box,
+    .stat-box {
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.78), rgba(245,250,246,0.75));
+      border: 1px solid var(--border);
+    }
+
+    .summary-box,
+    .roster-display {
+      min-height: 120px;
+      padding: 14px 16px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: "Courier New", monospace;
+      font-size: 0.87rem;
+      line-height: 1.6;
+    }
+
+    .roster-display {
+      min-height: 200px;
+      max-height: 420px;
+      overflow-y: auto;
+    }
+
+    .analysis-section {
+      margin-top: 28px;
+      margin-bottom: 12px;
+    }
+
+    .analysis-header {
+      margin: 0 0 14px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid var(--green);
+      color: var(--green-deep);
+      font-size: clamp(1.4rem, 2vw, 2rem);
+      letter-spacing: 0.04em;
+    }
+
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .analysis-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .analysis-box {
+      padding: 14px 16px;
+      min-height: 120px;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: "Courier New", monospace;
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+
+    .analysis-box.critical {
+      border-left: 6px solid var(--red);
+      background: linear-gradient(180deg, rgba(255,245,245,0.8), rgba(255,248,248,0.82));
+    }
+
+    .analysis-box.useful {
+      border-left: 6px solid var(--gold);
+      background: linear-gradient(180deg, rgba(255,250,236,0.8), rgba(255,248,235,0.82));
+    }
+
+    .analysis-box.useless {
+      border-left: 6px solid #8a8f94;
+      background: linear-gradient(180deg, rgba(245,245,245,0.8), rgba(240,242,244,0.82));
+    }
+
+    .analysis-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      letter-spacing: 0.05em;
+    }
+
+    .analysis-box.critical .analysis-title { color: var(--red-deep); }
+    .analysis-box.useful .analysis-title { color: #8d6000; }
+    .analysis-box.useless .analysis-title { color: #5a5a5a; }
+
+    .stats-boxes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .stat-box {
+      text-align: center;
+      padding: 18px 16px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .stat-value {
+      font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+      font-weight: 800;
+      font-family: "Courier New", monospace;
+      color: var(--green-deep);
+    }
+
+    .nav {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 30px;
+      padding-top: 18px;
+      border-top: 2px solid var(--border);
+    }
+
+    .card {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 92px;
+      text-decoration: none;
+      color: var(--text);
+      border-radius: 14px;
+      padding: 12px 10px;
+      font-weight: 700;
+      text-align: center;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(11, 51, 31, 0.18);
+    }
+
+    .card:nth-child(odd) {
+      background: linear-gradient(180deg, rgba(218,241,227,0.9), rgba(255,255,255,0.75));
+    }
+
+    .card:nth-child(even) {
+      background: linear-gradient(180deg, rgba(236,247,239,0.9), rgba(255,255,255,0.76));
+    }
+
+    .icon {
+      font-size: 1.5rem;
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 980px) {
+      .app-grid,
+      .analysis-grid,
+      .stats-boxes,
+      .analysis-row,
+      .nav {
+        grid-template-columns: 1fr;
+      }
+
+      .nav {
+        grid-template-columns: repeat(2, minmax(150px, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 12px 10px 24px;
+      }
+
+      .instructions,
+      .panel,
+      .summary-box,
+      .roster-display,
+      .analysis-box,
+      .stat-box,
+      .card {
+        border-radius: 12px;
+      }
+
+      .input-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .input-row label {
+        font-size: 0.8rem;
+      }
+
+      .filter-buttons {
+        gap: 8px;
+      }
+
+      .filter-btn,
+      .simulate-button-container button {
+        width: 100%;
+      }
+
+      .nav {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-box,
+      .roster-display,
+      .analysis-box {
+        font-size: 0.76rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>⚔️ FM Clan War Calculator</h1>
+
+    <div class="instructions">
+      <h2>📋 Instructions</h2>
+      <p><strong>Enter each team power score using one of two methods:</strong></p>
+      <p>1️⃣ <strong>Direct Entry:</strong> Use the top row to enter comma-separated power values (e.g. "1q, 500t, 200t, 100t, 50t")</p>
+      <p>2️⃣ <strong>Count Entry:</strong> Leave the top row empty and use the rows below to enter counts for each power tier</p>
+      <p>⚠️ <strong>Note:</strong> If the top row contains values, all other inputs are ignored</p>
+    </div>
+
+    <div class="filter-wrap">
+      <h3>Filter Power Tiers</h3>
+      <div class="filter-buttons">
+        <button class="filter-btn active" onclick="toggleTierSection('t', this)">Trillions (T)</button>
+        <button class="filter-btn active" onclick="toggleTierSection('b', this)">Billions (B)</button>
+        <button class="filter-btn active" onclick="toggleTierSection('m', this)">Millions (M)</button>
+        <button class="filter-btn active" onclick="toggleTierSection('k', this)">Thousands (K)</button>
+      </div>
+    </div>
+
+    <div class="simulate-button-container">
+      <button onclick="simulate()">⚡ SIMULATE ⚡</button>
+    </div>
+
+    <div class="app-grid">
+      <div class="column your-clan">
+        <div class="column-header">🏰 Your Clan</div>
+
+        <div class="panel">
+          <div class="input-row">
+            <label>Direct Entry:</label>
+            <input type="text" id="yourClanDirect" class="first-row-input" placeholder="1q, 500t, 200t, 100t...">
+          </div>
+          <div id="yourClanInputs"></div>
+        </div>
+
+        <div id="yourClanWarning" class="warning-box"></div>
+
+        <div class="result-label">📊 Team Summary</div>
+        <div class="summary-box" id="yourClanSummary">Ready to simulate...</div>
+
+        <div class="result-label">🎖️ Team Roster</div>
+        <div class="roster-display" id="yourClanRoster">Roster will appear here...</div>
+      </div>
+
+      <div class="column enemy-clan">
+        <div class="column-header">⚔️ Enemy Clan</div>
+
+        <div class="panel">
+          <div class="input-row">
+            <label>Direct Entry:</label>
+            <input type="text" id="enemyClanDirect" class="first-row-input" placeholder="1q, 500t, 200t, 100t...">
+          </div>
+          <div id="enemyClanInputs"></div>
+        </div>
+
+        <div id="enemyClanWarning" class="warning-box"></div>
+
+        <div class="result-label">📊 Team Summary</div>
+        <div class="summary-box" id="enemyClanSummary">Ready to simulate...</div>
+
+        <div class="result-label">🎖️ Team Roster</div>
+        <div class="roster-display" id="enemyClanRoster">Roster will appear here...</div>
+      </div>
+    </div>
+
+    <div class="analysis-section">
+      <h2 class="analysis-header">📈 Member Analysis</h2>
+      <div class="analysis-row">
+        <div class="analysis-box critical">
+          <div class="analysis-title">🔴 CRITICAL</div>
+          <div id="yourClanCritical">Members to be determined...</div>
+        </div>
+        <div class="analysis-box critical">
+          <div class="analysis-title">🔴 CRITICAL</div>
+          <div id="enemyClanCritical">Members to be determined...</div>
+        </div>
+      </div>
+
+      <div class="analysis-row">
+        <div class="analysis-box useful">
+          <div class="analysis-title">🟠 USEFUL</div>
+          <div id="yourClanUseful">Members to be determined...</div>
+        </div>
+        <div class="analysis-box useful">
+          <div class="analysis-title">🟠 USEFUL</div>
+          <div id="enemyClanUseful">Members to be determined...</div>
+        </div>
+      </div>
+
+      <div class="analysis-row">
+        <div class="analysis-box useless">
+          <div class="analysis-title">⚪ USELESS</div>
+          <div id="yourClanUseless">Members to be determined...</div>
+        </div>
+        <div class="analysis-box useless">
+          <div class="analysis-title">⚪ USELESS</div>
+          <div id="enemyClanUseless">Members to be determined...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="analysis-section">
+      <h2 class="analysis-header">🎯 Battle Estimates</h2>
+      <div class="stats-boxes">
+        <div class="stat-box">
+          <div class="stat-label">Estimated Enemy Resets</div>
+          <div class="stat-value" id="yourResetEstimate">-</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Estimated Your Resets</div>
+          <div class="stat-value" id="enemyResetEstimate">-</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="analysis-section">
+      <h2 class="analysis-header">⚡ Simulation Results</h2>
+      <div class="stats-boxes">
+        <div class="stat-box">
+          <div class="stat-label">Your Clan Resets</div>
+          <div class="stat-value" id="yourSimResets">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Your Clan Score</div>
+          <div class="stat-value" id="yourSimScore">0</div>
+        </div>
+      </div>
+
+      <div class="stats-boxes" style="margin-top: 18px;">
+        <div class="stat-box">
+          <div class="stat-label">Enemy Clan Resets</div>
+          <div class="stat-value" id="enemySimResets">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Enemy Clan Score</div>
+          <div class="stat-value" id="enemySimScore">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <a href="https://discord.gg/forgemaster" class="card" target="_blank" rel="noopener noreferrer">
+        <div class="icon">🔨</div>
+        <div>Discord Link</div>
+      </a>
+      <a href="https://ieagalei.github.io/FmDPS/" class="card" target="_blank" rel="noopener noreferrer">
+        <div class="icon">🧮</div>
+        <div>DPS Tool</div>
+      </a>
+      <a href="index.html" class="card">
+        <div class="icon">🛠️</div>
+        <div>Build Finder</div>
+      </a>
+      <a href="calculator.html" class="card">
+        <div class="icon">🧮</div>
+        <div>Number Calculator</div>
+      </a>
+      <a href="forge.html" class="card">
+        <div class="icon">🛠️</div>
+        <div>Forge Maths</div>
+      </a>
+      <a href="research.html" class="card">
+        <div class="icon">🌳</div>
+        <div>Tech Tree Maths</div>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    const powerTiers = [
+      { name: '1q', value: 1e15, type: 't' },
+      { name: '500t', value: 500e12, type: 't' },
+      { name: '200t', value: 200e12, type: 't' },
+      { name: '100t', value: 100e12, type: 't' },
+      { name: '50t', value: 50e12, type: 't' },
+      { name: '20t', value: 20e12, type: 't' },
+      { name: '10t', value: 10e12, type: 't' },
+      { name: '5t', value: 5e12, type: 't' },
+      { name: '2t', value: 2e12, type: 't' },
+      { name: '1t', value: 1e12, type: 't' },
+      { name: '500b', value: 500e9, type: 'b' },
+      { name: '200b', value: 200e9, type: 'b' },
+      { name: '100b', value: 100e9, type: 'b' },
+      { name: '50b', value: 50e9, type: 'b' },
+      { name: '20b', value: 20e9, type: 'b' },
+      { name: '10b', value: 10e9, type: 'b' },
+      { name: '5b', value: 5e9, type: 'b' },
+      { name: '2b', value: 2e9, type: 'b' },
+      { name: '1b', value: 1e9, type: 'b' },
+      { name: '500m', value: 500e6, type: 'm' },
+      { name: '200m', value: 200e6, type: 'm' },
+      { name: '100m', value: 100e6, type: 'm' },
+      { name: '50m', value: 50e6, type: 'm' },
+      { name: '20m', value: 20e6, type: 'm' },
+      { name: '10m', value: 10e6, type: 'm' },
+      { name: '5m', value: 5e6, type: 'm' },
+      { name: '2m', value: 2e6, type: 'm' },
+      { name: '1m', value: 1e6, type: 'm' },
+      { name: '500k', value: 500e3, type: 'k' },
+      { name: '200k', value: 200e3, type: 'k' },
+      { name: '100k', value: 100e3, type: 'k' },
+      { name: '50k', value: 50e3, type: 'k' },
+      { name: '20k', value: 20e3, type: 'k' },
+      { name: '10k', value: 10e3, type: 'k' }
+    ];
+
+    const tierVisibility = { t: true, b: true, m: true, k: true };
+
+    function initializeInputs() {
+      const container1 = $('yourClanInputs');
+      const container2 = $('enemyClanInputs');
+
+      let html = '<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(29,90,61,0.2);">';
+
+      powerTiers.forEach(tier => {
+        html += `<div class="tier-section tier-${tier.type} visible">
+          <div class="input-row">
+            <label><span class="power-label">${tier.name}</span></label>
+            <input type="number" id="yourClan${tier.name.replace(/[a-z]/gi, c => c)}" min="0" max="50" placeholder="0">
+          </div>
+        </div>`;
+      });
+
+      html += '</div>';
+      container1.innerHTML = html;
+      container2.innerHTML = html.replace(/yourClan/g, 'enemyClan');
+    }
+
+    function toggleTierSection(tierType, button) {
+      tierVisibility[tierType] = !tierVisibility[tierType];
+      button.classList.toggle('active');
+
+      const sections = document.querySelectorAll(`.tier-${tierType}`);
+      sections.forEach(section => section.classList.toggle('visible'));
+    }
+
+    function parseDirectInput(input) {
+      if (!input.trim()) return [];
+
+      const entries = input.split(',').map(e => e.trim().toUpperCase()).filter(e => e.length > 0);
+      const roster = [];
+
+      for (let entry of entries) {
+        let found = false;
+        for (let tier of powerTiers) {
+          if (entry === tier.name) {
+            roster.push({ tier: tier.name, value: tier.value });
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          const num = parseFloat(entry);
+          if (!isNaN(num)) {
+            for (let i = 0; i < powerTiers.length; i++) {
+              if (num >= powerTiers[i].value) {
+                roster.push({ tier: powerTiers[i].name, value: powerTiers[i].value });
+                found = true;
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      return roster;
+    }
+
+    function getCountInputs(clanPrefix) {
+      const counts = [];
+      for (let tier of powerTiers) {
+        const inputId = clanPrefix + tier.name.replace(/[a-z]/gi, c => c);
+        const input = $(inputId);
+        if (input) {
+          const count = parseInt(input.value) || 0;
+          if (count > 0) {
+            for (let i = 0; i < count; i++) {
+              counts.push({ tier: tier.name, value: tier.value });
+            }
+          }
+        }
+      }
+      return counts;
+    }
+
+    function parseTeam(clan) {
+      const prefix = clan === 'your' ? 'yourClan' : 'enemyClan';
+      const directInput = $(prefix + 'Direct').value.trim();
+
+      if (directInput) {
+        return parseDirectInput(directInput);
+      }
+      return getCountInputs(prefix);
+    }
+
+    function sortAndValidate(roster) {
+      const sorted = roster.sort((a, b) => b.value - a.value);
+
+      if (sorted.length > 50) {
+        return { roster: sorted.slice(0, 50), warning: `⚠️ Team exceeds 50 unit limit! Truncated from ${sorted.length} to 50 units.` };
+      }
+
+      return { roster: sorted, warning: null };
+    }
+
+    function assignScores(roster) {
+      return roster.map((unit, idx) => ({ ...unit, score: 50 - idx, index: idx }));
+    }
+
+    function getResetRequirement(memberCount) {
+      if (memberCount <= 10) return Math.min(5, memberCount);
+      return memberCount - 5;
+    }
+
+    function calculateResetEstimate(attackerRoster, defenderRoster) {
+      const defenderCount = defenderRoster.length;
+      const resetReq = getResetRequirement(defenderCount);
+
+      if (defenderCount === 0) return 0;
+
+      const effectiveDefenders = defenderRoster.slice(-resetReq);
+      const targetCount = effectiveDefenders.length;
+      const attackerCount = attackerRoster.length;
+      const totalAttacks = attackerCount * 5;
+
+      const resetEstimate = Math.floor(totalAttacks / targetCount);
+      return Math.min(5, resetEstimate);
+    }
+
+    function formatRoster(roster) {
+      if (roster.length === 0) return 'No units in roster';
+
+      const grouped = {};
+      for (let unit of roster) {
+        if (!grouped[unit.tier]) grouped[unit.tier] = 0;
+        grouped[unit.tier]++;
+      }
+
+      let output = '';
+      let unitNum = 1;
+      for (let tier of powerTiers) {
+        if (grouped[tier.name]) {
+          const count = grouped[tier.name];
+          output += `${unitNum}. [${tier.name}] x${count}\n`;
+          unitNum += count;
+        }
+      }
+
+      return output;
+    }
+
+    function getSummary(roster) {
+      if (roster.length === 0) return 'No units';
+
+      const totalPower = roster.reduce((sum, u) => sum + u.value, 0);
+      const avgPower = totalPower / roster.length;
+      const topTier = roster[0].tier;
+      const unitCount = roster.length;
+
+      let summary = `Total Units: ${unitCount}\n`;
+      summary += `Top Tier: ${topTier}\n`;
+      summary += `Total Power: ${formatLargeNumber(totalPower)}\n`;
+      summary += `Avg Power: ${formatLargeNumber(avgPower)}\n`;
+
+      return summary;
+    }
+
+    function formatLargeNumber(num) {
+      if (num >= 1e15) return (num / 1e15).toFixed(1) + 'q';
+      if (num >= 1e12) return (num / 1e12).toFixed(1) + 't';
+      if (num >= 1e9) return (num / 1e9).toFixed(1) + 'b';
+      if (num >= 1e6) return (num / 1e6).toFixed(1) + 'm';
+      if (num >= 1e3) return (num / 1e3).toFixed(1) + 'k';
+      return num.toFixed(0);
+    }
+
+    function simulateBattle(attackerRoster, defenderRoster) {
+      const attackerCount = attackerRoster.length;
+      const defenderCount = defenderRoster.length;
+
+      if (attackerCount === 0 || defenderCount === 0) {
+        return { resets: 0, score: 0 };
+      }
+
+      const resetReq = getResetRequirement(defenderCount);
+      const resetEstimate = calculateResetEstimate(attackerRoster, defenderRoster);
+
+      const defenderTargets = defenderRoster.map((unit, idx) => ({ ...unit, availableForScore: true, beaten: 0 }));
+      const attackerAttacks = attackerRoster.map(unit => ({ ...unit, remainingAttacks: 5 }));
+
+      let totalScore = 0;
+      let totalResets = 0;
+
+      if (resetEstimate > 0) {
+        const skipInterval = 5 - resetEstimate + 1;
+
+        for (let offset = 0; offset < skipInterval; offset++) {
+          let changedThisRound = true;
+          while (changedThisRound) {
+            changedThisRound = false;
+
+            for (let i = offset; i < attackerCount; i += skipInterval) {
+              const attacker = attackerAttacks[i];
+              if (attacker.remainingAttacks <= 0) continue;
+
+              for (let j = defenderTargets.length - 1; j >= 0 && attacker.remainingAttacks > 0; j--) {
+                const target = defenderTargets[j];
+                if (target.value < attacker.value && target.availableForScore) {
+                  totalScore += target.score;
+                  target.availableForScore = false;
+                  attacker.remainingAttacks--;
+                  target.beaten++;
+                  changedThisRound = true;
+                }
+              }
+            }
+
+            const beatCount = defenderTargets.filter(d => d.beaten > 0).length;
+            if (beatCount >= resetReq) {
+              totalResets++;
+              defenderTargets.forEach(d => {
+                d.availableForScore = true;
+                d.beaten = 0;
+              });
+            }
+          }
+        }
+      }
+
+      let changedFinal = true;
+      while (changedFinal) {
+        changedFinal = false;
+        for (let attacker of attackerAttacks) {
+          if (attacker.remainingAttacks <= 0) continue;
+
+          for (let j = defenderTargets.length - 1; j >= 0 && attacker.remainingAttacks > 0; j--) {
+            const target = defenderTargets[j];
+            if (target.value < attacker.value && target.availableForScore) {
+              totalScore += target.score;
+              target.availableForScore = false;
+              attacker.remainingAttacks--;
+              target.beaten++;
+              changedFinal = true;
+            }
+          }
+        }
+
+        const beatCount = defenderTargets.filter(d => d.beaten > 0).length;
+        if (beatCount >= resetReq) {
+          totalResets++;
+          defenderTargets.forEach(d => {
+            d.availableForScore = true;
+            d.beaten = 0;
+          });
+        }
+      }
+
+      return { resets: totalResets, score: totalScore };
+    }
+
+    function analyzeMembers(roster, enemyRoster) {
+      if (roster.length === 0) {
+        return { critical: [], useful: [], useless: [] };
+      }
+
+      const resetReq = getResetRequirement(roster.length);
+      const enemyEffective = enemyRoster.slice(-resetReq);
+
+      let criticalThreshold = null;
+      for (let i = 0; i < roster.length; i++) {
+        const member = roster[i];
+        const canBeat = enemyEffective.some(e => e.value < member.value);
+        if (canBeat && criticalThreshold === null) {
+          criticalThreshold = member;
+          break;
+        }
+      }
+
+      const critical = [];
+      const useful = [];
+      const useless = [];
+
+      for (let member of roster) {
+        const canBeatAnyone = enemyRoster.some(e => e.value < member.value);
+
+        if (!canBeatAnyone) {
+          useless.push(member);
+        } else if (criticalThreshold && member.value >= criticalThreshold.value) {
+          critical.push(member);
+        } else if (canBeatAnyone) {
+          useful.push(member);
+        }
+      }
+
+      return { critical, useful, useless };
+    }
+
+    function formatAnalysis(members) {
+      if (members.length === 0) return 'None';
+
+      let output = '';
+      for (let i = 0; i < members.length; i++) {
+        output += `${i + 1}. ${members[i].tier} (Score: ${members[i].score})\n`;
+      }
+      return output;
+    }
+
+    function simulate() {
+      const yourRoster = parseTeam('your');
+      const enemyRoster = parseTeam('enemy');
+
+      const yourValidation = sortAndValidate(yourRoster);
+      const enemyValidation = sortAndValidate(enemyRoster);
+
+      const yourWarning = $('yourClanWarning');
+      const enemyWarning = $('enemyClanWarning');
+
+      if (yourValidation.warning) {
+        yourWarning.textContent = yourValidation.warning;
+        yourWarning.style.display = 'block';
+      } else {
+        yourWarning.style.display = 'none';
+      }
+
+      if (enemyValidation.warning) {
+        enemyWarning.textContent = enemyValidation.warning;
+        enemyWarning.style.display = 'block';
+      } else {
+        enemyWarning.style.display = 'none';
+      }
+
+      const yourFinal = assignScores(yourValidation.roster);
+      const enemyFinal = assignScores(enemyValidation.roster);
+
+      $('yourClanSummary').textContent = getSummary(yourFinal);
+      $('enemyClanSummary').textContent = getSummary(enemyFinal);
+      $('yourClanRoster').textContent = formatRoster(yourFinal);
+      $('enemyClanRoster').textContent = formatRoster(enemyFinal);
+
+      const yourAnalysis = analyzeMembers(yourFinal, enemyFinal);
+      const enemyAnalysis = analyzeMembers(enemyFinal, yourFinal);
+
+      $('yourClanCritical').textContent = formatAnalysis(yourAnalysis.critical);
+      $('yourClanUseful').textContent = formatAnalysis(yourAnalysis.useful);
+      $('yourClanUseless').textContent = formatAnalysis(yourAnalysis.useless);
+
+      $('enemyClanCritical').textContent = formatAnalysis(enemyAnalysis.critical);
+      $('enemyClanUseful').textContent = formatAnalysis(enemyAnalysis.useful);
+      $('enemyClanUseless').textContent = formatAnalysis(enemyAnalysis.useless);
+
+      const yourResetEst = calculateResetEstimate(yourFinal, enemyFinal);
+      const enemyResetEst = calculateResetEstimate(enemyFinal, yourFinal);
+
+      $('yourResetEstimate').textContent = `${yourResetEst}`;
+      $('enemyResetEstimate').textContent = `${enemyResetEst}`;
+
+      const yourBattle = simulateBattle(yourFinal, enemyFinal);
+      const enemyBattle = simulateBattle(enemyFinal, yourFinal);
+
+      $('yourSimResets').textContent = yourBattle.resets;
+      $('yourSimScore').textContent = yourBattle.score;
+      $('enemySimResets').textContent = enemyBattle.resets;
+      $('enemySimScore').textContent = enemyBattle.score;
+    }
+
+    initializeInputs();
+  </script>
+</body>
+</html>
