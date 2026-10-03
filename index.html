@@ -105,21 +105,9 @@
       margin: 0 0 12px;
       color: var(--green-deep);
       font-size: 1.1rem;
-      cursor: pointer;
       user-select: none;
       display: inline-block;
       width: 100%;
-    }
-
-    .filter-wrap h3::before {
-      content: "▶ ";
-      display: inline-block;
-      transition: transform 0.2s ease;
-      margin-right: 8px;
-    }
-
-    .filter-wrap.collapsed h3::before {
-      transform: rotate(-90deg);
     }
 
     .filter-buttons {
@@ -478,58 +466,13 @@
     .chart-box {
       padding: 16px;
       min-height: 280px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-around;
-      gap: 8px;
-      overflow-x: auto;
       position: relative;
+      overflow: hidden;
     }
 
-    .chart-bar {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      min-width: 24px;
-    }
-
-    .chart-bar-fill {
-      width: 20px;
-      background: linear-gradient(180deg, rgba(42, 122, 226, 0.9), rgba(42, 122, 226, 0.6));
-      border-radius: 4px 4px 0 0;
-      transition: background 0.2s ease;
-      position: relative;
-    }
-
-    .enemy-clan-side .chart-bar-fill {
-      background: linear-gradient(180deg, rgba(227, 93, 93, 0.9), rgba(227, 93, 93, 0.6));
-    }
-
-    .chart-bar-fill.critical {
-      background: linear-gradient(180deg, #ff6b6b, #e35d5d) !important;
-      box-shadow: 0 0 8px rgba(227, 93, 93, 0.6);
-    }
-
-    .chart-bar-label {
-      font-size: 0.7rem;
-      color: var(--text);
-      font-weight: 700;
-      writing-mode: vertical-rl;
-      text-orientation: mixed;
-      white-space: nowrap;
-      transform: rotate(180deg);
-      height: 40px;
-    }
-
-    .chart-threshold-line {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: repeating-linear-gradient(90deg, var(--gold) 0, var(--gold) 4px, transparent 4px, transparent 8px);
-      z-index: 10;
+    .chart-svg {
+      width: 100%;
+      height: 100%;
     }
 
     .analysis-box {
@@ -544,11 +487,6 @@
       line-height: 1.55;
     }
 
-    .analysis-box.critical {
-      border-left: 6px solid var(--red);
-      background: linear-gradient(180deg, rgba(255,245,245,0.8), rgba(255,248,248,0.82));
-    }
-
     .analysis-box.useful {
       border-left: 6px solid var(--gold);
       background: linear-gradient(180deg, rgba(255,250,236,0.8), rgba(255,248,235,0.82));
@@ -561,7 +499,6 @@
       letter-spacing: 0.05em;
     }
 
-    .analysis-box.critical .analysis-title { color: var(--red-deep); }
     .analysis-box.useful .analysis-title { color: #8d6000; }
 
     .stats-container {
@@ -713,12 +650,12 @@
       <h2>📋 Instructions</h2>
       <p><strong>Enter each team power score using one of two methods:</strong></p>
       <p>1️⃣ <strong>Direct Entry:</strong> Use the top row to enter comma-separated power values (e.g., "600t, 100t, 15t, 5t, 3t")</p>
-      <p>2️⃣ <strong>Count Entry:</strong> Leave the top row empty and use the rows below to enter counts for each power tier</p>
+      <p>2️⃣ <strong>Count Entry:</strong> Toggle the power tier buttons to reveal count inputs for each tier</p>
       <p>⚠️ <strong>Note:</strong> If the top row contains values, all other inputs are ignored</p>
     </div>
 
-    <div class="filter-wrap collapsed" onclick="toggleFilterWrap()">
-      <h3>Filter Power Tiers</h3>
+    <div class="filter-wrap" onclick="toggleFilterWrap()">
+      <h3>⚙️ Show Power Tier Count Inputs</h3>
       <div class="filter-buttons">
         <button class="filter-btn active" onclick="toggleTierSection('t', this)">Trillions (T)</button>
         <button class="filter-btn active" onclick="toggleTierSection('b', this)">Billions (B)</button>
@@ -802,7 +739,7 @@
 
           <div class="result-label">Member Strength Distribution</div>
           <div class="chart-box" id="yourChart">
-            <div style="text-align: center; color: var(--muted); width: 100%;">Chart loading...</div>
+            <svg class="chart-svg" viewBox="0 0 800 250" preserveAspectRatio="xMidYMid meet"></svg>
           </div>
 
           <div class="result-label">Viable Members</div>
@@ -838,7 +775,7 @@
 
           <div class="result-label">Member Strength Distribution</div>
           <div class="chart-box" id="enemyChart">
-            <div style="text-align: center; color: var(--muted); width: 100%;">Chart loading...</div>
+            <svg class="chart-svg" viewBox="0 0 800 250" preserveAspectRatio="xMidYMid meet"></svg>
           </div>
 
           <div class="result-label">Viable Members</div>
@@ -953,7 +890,7 @@
       { name: '10k', value: 10e3, type: 'k' }
     ];
 
-    const tierVisibility = { t: true, b: true, m: true, k: true };
+    const tierVisibility = { t: false, b: false, m: false, k: false };
 
     function toggleFilterWrap() {
       const wrap = document.querySelector('.filter-wrap');
@@ -975,7 +912,7 @@
       let html = '<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(29,90,61,0.2);">';
 
       powerTiers.forEach(tier => {
-        html += `<div class="tier-section tier-${tier.type} visible">
+        html += `<div class="tier-section tier-${tier.type}">
           <div class="input-row">
             <label><span class="power-label">${tier.name}</span></label>
             <input type="number" id="yourClan${tier.name.replace(/[a-z]/gi, c => c)}" min="0" max="50" placeholder="0">
@@ -1138,30 +1075,126 @@
       return num.toFixed(0);
     }
 
-    function createChart(roster, defenderRoster, containerId, isSelf) {
+    function createLineChart(roster, defenderRoster, containerId, isYourClan) {
+      const svg = $(containerId).querySelector('svg');
+      svg.innerHTML = '';
+
       if (roster.length === 0) {
-        $(containerId).innerHTML = '<div style="text-align: center; color: var(--muted); width: 100%;">No data</div>';
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', '400');
+        text.setAttribute('y', '125');
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('fill', '#999');
+        text.setAttribute('font-size', '14');
+        text.textContent = 'No data';
+        svg.appendChild(text);
         return;
       }
 
       const resetReq = getResetRequirement(defenderRoster.length);
       const thresholdIndex = Math.max(0, roster.length - resetReq);
+      const maxScore = Math.max(...roster.map(u => u.score), 1);
 
-      let maxScore = Math.max(...roster.map(u => u.score), 1);
-      let chartHTML = '';
+      // Margins and dimensions
+      const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+      const width = 800 - margin.left - margin.right;
+      const height = 250 - margin.top - margin.bottom;
 
-      for (let i = 0; i < Math.min(roster.length, 30); i++) {
-        const unit = roster[i];
-        const heightPercent = (unit.score / maxScore) * 100;
-        const isCritical = i < thresholdIndex;
+      // Create group for chart
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('transform', `translate(${margin.left},${margin.top})`);
+      svg.appendChild(g);
 
-        chartHTML += `<div class="chart-bar">
-          <div class="chart-bar-fill ${isCritical ? 'critical' : ''}" style="height: ${heightPercent}px;" title="Score: ${unit.score}"></div>
-          <div class="chart-bar-label">${unit.score}</div>
-        </div>`;
+      // Calculate scaling
+      const xScale = width / Math.max(roster.length - 1, 1);
+      const yScale = height / maxScore;
+
+      // Draw threshold line (golden dashed)
+      if (thresholdIndex > 0) {
+        const thresholdX = thresholdIndex * xScale;
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', thresholdX);
+        line.setAttribute('y1', '0');
+        line.setAttribute('x2', thresholdX);
+        line.setAttribute('y2', height);
+        line.setAttribute('stroke', '#f0b94d');
+        line.setAttribute('stroke-width', '2');
+        line.setAttribute('stroke-dasharray', '4,4');
+        line.setAttribute('opacity', '0.7');
+        g.appendChild(line);
       }
 
-      $(containerId).innerHTML = chartHTML;
+      // Draw line path
+      const color = isYourClan ? '#2a7ae2' : '#e35d5d';
+      let pathData = '';
+
+      for (let i = 0; i < roster.length; i++) {
+        const x = i * xScale;
+        const y = height - roster[i].score * yScale;
+        pathData += (i === 0 ? 'M' : 'L') + ` ${x} ${y}`;
+      }
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', pathData);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', color);
+      path.setAttribute('stroke-width', '2.5');
+      path.setAttribute('stroke-linecap', 'round');
+      path.setAttribute('stroke-linejoin', 'round');
+      g.appendChild(path);
+
+      // Draw points
+      for (let i = 0; i < roster.length; i++) {
+        const x = i * xScale;
+        const y = height - roster[i].score * yScale;
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', x);
+        circle.setAttribute('cy', y);
+        circle.setAttribute('r', '3');
+        circle.setAttribute('fill', color);
+        circle.setAttribute('opacity', '0.8');
+        g.appendChild(circle);
+      }
+
+      // Draw axes
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', '0');
+      xAxis.setAttribute('y1', height);
+      xAxis.setAttribute('x2', width);
+      xAxis.setAttribute('y2', height);
+      xAxis.setAttribute('stroke', '#999');
+      xAxis.setAttribute('stroke-width', '1');
+      g.appendChild(xAxis);
+
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', '0');
+      yAxis.setAttribute('y1', '0');
+      yAxis.setAttribute('x2', '0');
+      yAxis.setAttribute('y2', height);
+      yAxis.setAttribute('stroke', '#999');
+      yAxis.setAttribute('stroke-width', '1');
+      g.appendChild(yAxis);
+
+      // Y-axis label
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', '-' + (height / 2));
+      yLabel.setAttribute('y', '-25');
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('transform', 'rotate(-90)');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', '#666');
+      yLabel.textContent = 'Score';
+      g.appendChild(yLabel);
+
+      // X-axis label
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height + 25);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', '#666');
+      xLabel.textContent = 'Member #';
+      g.appendChild(xLabel);
     }
 
     function analyzeMembers(roster, enemyRoster) {
@@ -1172,7 +1205,6 @@
       const resetReq = getResetRequirement(roster.length);
       const enemyResetReq = getResetRequirement(enemyRoster.length);
       
-      // Attacker critical: first unit that can beat weakest enemy that needs to be beaten for reset
       const enemyEffective = enemyRoster.slice(-enemyResetReq);
       const weakestEnemy = enemyEffective[0];
       
@@ -1184,7 +1216,6 @@
         }
       }
 
-      // Target critical: offset by reset threshold (members beyond the reset threshold)
       const targetOffset = Math.max(0, roster.length - resetReq);
       const targetCritical = roster.length > targetOffset ? roster[targetOffset].score : 0;
 
@@ -1359,8 +1390,8 @@
         $('enemyTargetCritical').textContent = enemyAnalysis.targetCritical || '—';
         $('enemyResetThreshold').textContent = getResetRequirement(yourFinal.length);
 
-        createChart(yourFinal, enemyFinal, 'yourChart', true);
-        createChart(enemyFinal, yourFinal, 'enemyChart', false);
+        createLineChart(yourFinal, enemyFinal, 'yourChart', true);
+        createLineChart(enemyFinal, yourFinal, 'enemyChart', false);
 
         updateStatus('Estimating resets...', 'ready');
 
