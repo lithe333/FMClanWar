@@ -111,7 +111,7 @@
     }
 
     .filter-buttons {
-      display: none;
+      display: visible;
       flex-wrap: wrap;
       justify-content: center;
       gap: 12px;
@@ -654,8 +654,8 @@
       <p>⚠️ <strong>Note:</strong> If the top row contains values, all other inputs are ignored</p>
     </div>
 
-    <div class="filter-wrap" onclick="toggleFilterWrap()">
-      <h3>⚙️ Show Power Tier Count Inputs</h3>
+    <div class="filter-wrap">
+      <h3>⚙️ Power Tier Count Inputs</h3>
       <div class="filter-buttons">
         <button class="filter-btn active" onclick="toggleTierSection('t', this)">Trillions (T)</button>
         <button class="filter-btn active" onclick="toggleTierSection('b', this)">Billions (B)</button>
@@ -891,13 +891,6 @@
     ];
 
     const tierVisibility = { t: false, b: false, m: false, k: false };
-
-    function toggleFilterWrap() {
-      const wrap = document.querySelector('.filter-wrap');
-      const buttons = document.querySelector('.filter-buttons');
-      wrap.classList.toggle('collapsed');
-      buttons.classList.toggle('visible');
-    }
 
     function updateStatus(message, type = 'ready') {
       const status = $('statusDisplay');
