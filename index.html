@@ -487,9 +487,19 @@
       line-height: 1.55;
     }
 
-    .analysis-box.useful {
+    .analysis-box.critical {
       border-left: 6px solid var(--gold);
       background: linear-gradient(180deg, rgba(255,250,236,0.8), rgba(255,248,235,0.82));
+    }
+
+    .analysis-box.viable {
+      border-left: 6px solid var(--green);
+      background: linear-gradient(180deg, rgba(91,189,109,0.08), rgba(91,189,109,0.05));
+    }
+
+    .analysis-box.non-viable {
+      border-left: 6px solid var(--red);
+      background: linear-gradient(180deg, rgba(227,93,93,0.08), rgba(227,93,93,0.05));
     }
 
     .analysis-title {
@@ -499,7 +509,9 @@
       letter-spacing: 0.05em;
     }
 
-    .analysis-box.useful .analysis-title { color: #8d6000; }
+    .analysis-box.critical .analysis-title { color: #8d6000; }
+    .analysis-box.viable .analysis-title { color: var(--green-deep); }
+    .analysis-box.non-viable .analysis-title { color: var(--red-deep); }
 
     .stats-container {
       display: grid;
@@ -717,15 +729,19 @@
 
     <div class="analysis-section">
       <h2 class="analysis-header">📈 Strategic Analysis</h2>
-      
+
       <div class="analysis-container">
         <div class="analysis-side your-clan-side">
-          <div class="analysis-side-title">🏰 Your Clan vs Enemy Targets</div>
-          
+          <div class="analysis-side-title">🏰 Your Clan Analysis</div>
+
           <div class="critical-values">
             <div class="critical-value-row">
               <div class="critical-value-label">Critical Group Size</div>
               <div class="critical-value-number" id="yourCriticalGroupSize">-</div>
+            </div>
+            <div class="critical-value-row">
+              <div class="critical-value-label">Critical Attacker Power</div>
+              <div class="critical-value-number" id="yourCriticalAttackerPower">-</div>
             </div>
             <div class="critical-value-row">
               <div class="critical-value-label">Enemy Spread</div>
@@ -737,31 +753,41 @@
             </div>
           </div>
 
-          <div class="result-label">Target Power Distribution (Cumulative)</div>
+          <div class="result-label">Power Distribution (Cumulative Count)</div>
           <div class="chart-box" id="yourChart">
             <svg class="chart-svg" viewBox="0 0 800 250" preserveAspectRatio="xMidYMid meet"></svg>
           </div>
 
-          <div class="result-label">Viable Members (Can Attack)</div>
-          <div class="analysis-box useful">
-            <div class="analysis-title">✅ CRITICAL GROUP</div>
-            <div id="yourClanUseful">Members to be determined...</div>
+          <div class="result-label">🔴 Critical Members (Leader Tier)</div>
+          <div class="analysis-box critical">
+            <div class="analysis-title">⭐ CRITICAL / LEADER</div>
+            <div id="yourCriticalMembers">Members to be determined...</div>
           </div>
 
-          <div class="result-label">Non-Viable Members</div>
-          <div class="analysis-box">
-            <div class="analysis-title">❌ CANNOT ATTACK TARGETS</div>
-            <div id="yourClanUseless">Members to be determined...</div>
+          <div class="result-label">🟢 Viable Members (Can Attack)</div>
+          <div class="analysis-box viable">
+            <div class="analysis-title">✅ VIABLE</div>
+            <div id="yourViableMembers">Members to be determined...</div>
+          </div>
+
+          <div class="result-label">🔵 Non-Viable Members</div>
+          <div class="analysis-box non-viable">
+            <div class="analysis-title">❌ NON-VIABLE</div>
+            <div id="yourNonViableMembers">Members to be determined...</div>
           </div>
         </div>
 
         <div class="analysis-side enemy-clan-side">
-          <div class="analysis-side-title">⚔️ Enemy Clan vs Your Targets</div>
-          
+          <div class="analysis-side-title">⚔️ Enemy Clan Analysis</div>
+
           <div class="critical-values">
             <div class="critical-value-row">
               <div class="critical-value-label">Critical Group Size</div>
               <div class="critical-value-number" id="enemyCriticalGroupSize">-</div>
+            </div>
+            <div class="critical-value-row">
+              <div class="critical-value-label">Critical Attacker Power</div>
+              <div class="critical-value-number" id="enemyCriticalAttackerPower">-</div>
             </div>
             <div class="critical-value-row">
               <div class="critical-value-label">Your Spread</div>
@@ -773,45 +799,27 @@
             </div>
           </div>
 
-          <div class="result-label">Target Power Distribution (Cumulative)</div>
+          <div class="result-label">Power Distribution (Cumulative Count)</div>
           <div class="chart-box" id="enemyChart">
             <svg class="chart-svg" viewBox="0 0 800 250" preserveAspectRatio="xMidYMid meet"></svg>
           </div>
 
-          <div class="result-label">Viable Members (Can Attack)</div>
-          <div class="analysis-box useful">
-            <div class="analysis-title">✅ CRITICAL GROUP</div>
-            <div id="enemyClanUseful">Members to be determined...</div>
+          <div class="result-label">🔴 Critical Members (Leader Tier)</div>
+          <div class="analysis-box critical">
+            <div class="analysis-title">⭐ CRITICAL / LEADER</div>
+            <div id="enemyCriticalMembers">Members to be determined...</div>
           </div>
 
-          <div class="result-label">Non-Viable Members</div>
-          <div class="analysis-box">
-            <div class="analysis-title">❌ CANNOT ATTACK TARGETS</div>
-            <div id="enemyClanUseless">Members to be determined...</div>
+          <div class="result-label">🟢 Viable Members (Can Attack)</div>
+          <div class="analysis-box viable">
+            <div class="analysis-title">✅ VIABLE</div>
+            <div id="enemyViableMembers">Members to be determined...</div>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="analysis-section">
-      <h2 class="analysis-header">🎯 Battle Estimates</h2>
-      <div class="stats-container">
-        <div class="stat-column your-clan-stat">
-          <div class="stat-column-title">🏰 Your Clan</div>
-          <div class="stats-boxes">
-            <div class="stat-box">
-              <div class="stat-label">Enemy Resets Est.</div>
-              <div class="stat-value" id="yourResetEstimate">-</div>
-            </div>
-          </div>
-        </div>
-        <div class="stat-column enemy-clan-stat">
-          <div class="stat-column-title">⚔️ Enemy Clan</div>
-          <div class="stats-boxes">
-            <div class="stat-box">
-              <div class="stat-label">Your Resets Est.</div>
-              <div class="stat-value" id="enemyResetEstimate">-</div>
-            </div>
+          <div class="result-label">🔵 Non-Viable Members</div>
+          <div class="analysis-box non-viable">
+            <div class="analysis-title">❌ NON-VIABLE</div>
+            <div id="enemyNonViableMembers">Members to be determined...</div>
           </div>
         </div>
       </div>
@@ -928,14 +936,14 @@
 
     function findClosestTierLower(value) {
       let closestTier = powerTiers[powerTiers.length - 1];
-      
+
       for (let tier of powerTiers) {
         if (value >= tier.value) {
           closestTier = tier;
           break;
         }
       }
-      
+
       return closestTier;
     }
 
@@ -1010,24 +1018,34 @@
       return roster.map((unit, idx) => ({ ...unit, score: 50 - idx, index: idx }));
     }
 
-    function getResetRequirement(memberCount) {
-      if (memberCount <= 10) return Math.min(5, memberCount);
+    function getDefenderCount(memberCount) {
+      if (memberCount <= 10) return Math.min(memberCount, 5);
       return memberCount - 5;
     }
 
-    function calculateResetEstimate(attackerRoster, defenderRoster) {
-      const defenderCount = defenderRoster.length;
-      const resetReq = getResetRequirement(defenderCount);
+    function formatLargeNumber(num) {
+      if (num >= 1e15) return (num / 1e15).toFixed(1) + 'q';
+      if (num >= 1e12) return (num / 1e12).toFixed(1) + 't';
+      if (num >= 1e9) return (num / 1e9).toFixed(1) + 'b';
+      if (num >= 1e6) return (num / 1e6).toFixed(1) + 'm';
+      if (num >= 1e3) return (num / 1e3).toFixed(1) + 'k';
+      return num.toFixed(0);
+    }
 
-      if (defenderCount === 0) return 0;
+    function getSummary(roster) {
+      if (roster.length === 0) return 'No units';
 
-      const effectiveDefenders = defenderRoster.slice(-resetReq);
-      const targetCount = effectiveDefenders.length;
-      const attackerCount = attackerRoster.length;
-      const totalAttacks = attackerCount * 5;
+      const totalPower = roster.reduce((sum, u) => sum + u.value, 0);
+      const avgPower = totalPower / roster.length;
+      const topTier = roster[0].tier;
+      const unitCount = roster.length;
 
-      const resetEstimate = Math.floor(totalAttacks / targetCount);
-      return Math.min(5, resetEstimate);
+      let summary = `Total Units: ${unitCount}\n`;
+      summary += `Top Tier: ${topTier}\n`;
+      summary += `Total Power: ${formatLargeNumber(totalPower)}\n`;
+      summary += `Avg Power: ${formatLargeNumber(avgPower)}\n`;
+
+      return summary;
     }
 
     function formatRoster(roster) {
@@ -1052,116 +1070,118 @@
       return output;
     }
 
-    function getSummary(roster) {
-      if (roster.length === 0) return 'No units';
-
-      const totalPower = roster.reduce((sum, u) => sum + u.value, 0);
-      const avgPower = totalPower / roster.length;
-      const topTier = roster[0].tier;
-      const unitCount = roster.length;
-
-      let summary = `Total Units: ${unitCount}\n`;
-      summary += `Top Tier: ${topTier}\n`;
-      summary += `Total Power: ${formatLargeNumber(totalPower)}\n`;
-      summary += `Avg Power: ${formatLargeNumber(avgPower)}\n`;
-
-      return summary;
+    function getMedianPower(roster) {
+      if (roster.length === 0) return 0;
+      const sorted = [...roster].sort((a, b) => a.value - b.value);
+      const mid = Math.floor(sorted.length / 2);
+      return sorted.length % 2 === 0 ? (sorted[mid - 1].value + sorted[mid].value) / 2 : sorted[mid].value;
     }
 
-    function formatLargeNumber(num) {
-      if (num >= 1e15) return (num / 1e15).toFixed(1) + 'q';
-      if (num >= 1e12) return (num / 1e12).toFixed(1) + 't';
-      if (num >= 1e9) return (num / 1e9).toFixed(1) + 'b';
-      if (num >= 1e6) return (num / 1e6).toFixed(1) + 'm';
-      if (num >= 1e3) return (num / 1e3).toFixed(1) + 'k';
-      return num.toFixed(0);
-    }
-
-    function buildDistributionData(roster) {
-      const distribution = {};
+    function getTierForValue(value) {
       for (let tier of powerTiers) {
-        distribution[tier.name] = 0;
+        if (tier.value <= value) return tier.name;
       }
-      for (let unit of roster) {
-        distribution[unit.tier]++;
-      }
-      return distribution;
+      return powerTiers[powerTiers.length - 1].name;
     }
 
-    function buildCumulativeDistribution(roster, targetRoster) {
-      const resetReq = getResetRequirement(targetRoster.length);
-      const targetMembers = targetRoster.slice(-resetReq);
-      
-      const distribution = {};
-      for (let tier of powerTiers) {
-        distribution[tier.name] = 0;
-      }
-      
-      for (let member of targetMembers) {
-        distribution[member.tier]++;
-      }
-
-      const cumulativeData = [];
+    function buildCumulativeData(roster, minValue, maxValue) {
+      const data = [];
       let cumulative = 0;
-      
-      for (let tier of powerTiers) {
-        cumulative += distribution[tier.name];
-        cumulativeData.push({
-          tier: tier.name,
-          value: tier.value,
-          count: distribution[tier.name],
-          cumulative: cumulative
-        });
+
+      for (let tier of [...powerTiers].reverse()) {
+        const tierValue = tier.value;
+        if (tierValue >= minValue && tierValue <= maxValue) {
+          const count = roster.filter(m => m.value === tierValue).length;
+          cumulative += count;
+          data.push({ tier: tier.name, value: tierValue, count, cumulative });
+        }
       }
 
-      return cumulativeData.reverse();
+      return data.reverse();
     }
 
-    function analyzeMembers(roster, targetRoster) {
+    function analyzeMembers(roster, defenderRoster) {
       if (roster.length === 0) {
-        return { 
-          viable: [], 
-          nonViable: [], 
+        return {
+          critical: [],
+          viable: [],
+          nonViable: [],
           criticalGroupSize: 0,
-          targetSpread: 0,
+          criticalAttackerPower: '-',
+          defenderSpread: 0,
           criticalTargetTier: '-'
         };
       }
 
-      const resetReq = getResetRequirement(targetRoster.length);
-      const targetMembers = targetRoster.slice(-resetReq);
-      const weakestTarget = targetMembers[0];
+      const defenderCount = defenderRoster.length;
+      const defenderSize = getDefenderCount(defenderCount);
+      const defenders = defenderRoster.slice(-defenderSize);
 
-      const viable = [];
-      const nonViable = [];
+      if (defenders.length === 0) {
+        return {
+          critical: [],
+          viable: [],
+          nonViable: roster,
+          criticalGroupSize: 0,
+          criticalAttackerPower: '-',
+          defenderSpread: 0,
+          criticalTargetTier: '-'
+        };
+      }
 
-      for (let unit of roster) {
-        const canBeatWeakest = weakestTarget && unit.value > weakestTarget.value;
-        if (canBeatWeakest) {
-          viable.push(unit);
-        } else {
-          nonViable.push(unit);
+      const weakestDefender = defenders[defenders.length - 1].value;
+
+      // Non-viable members: equal to or weaker than the weakest defender
+      const nonViable = roster.filter(member => member.value <= weakestDefender);
+
+      // Find the critical power tier from the cumulative-count crossover
+      const minValue = Math.min(
+        Math.min(...roster.map(m => m.value)),
+        Math.min(...defenders.map(d => d.value))
+      );
+      const maxValue = Math.max(
+        Math.max(...roster.map(m => m.value)),
+        Math.max(...defenders.map(d => d.value))
+      );
+
+      const rosterData = buildCumulativeData(roster, minValue, maxValue);
+      const defenderData = buildCumulativeData(defenders, minValue, maxValue);
+
+      let criticalTierValue = null;
+      let criticalPowerTier = null;
+
+      for (let i = 0; i < rosterData.length; i++) {
+        const rosterCum = rosterData[i].cumulative;
+        const defenderCum = i < defenderData.length ? defenderData[i].cumulative : 0;
+
+        if (rosterCum < defenderCum) {
+          criticalTierValue = rosterData[i].value;
+          criticalPowerTier = rosterData[i].tier;
+          break;
         }
       }
 
-      const criticalGroupSize = viable.length;
-      const targetSpread = targetMembers.length;
-      
-      let criticalTargetTier = '-';
-      if (criticalGroupSize > 0 && targetSpread > 0) {
-        const targetsPerCritical = Math.ceil(targetSpread / criticalGroupSize);
-        const tierIndex = Math.max(0, targetMembers.length - targetsPerCritical);
-        if (tierIndex < targetMembers.length) {
-          criticalTargetTier = targetMembers[tierIndex].tier;
-        }
+      if (criticalTierValue === null) {
+        criticalTierValue = roster[roster.length - 1].value;
+        criticalPowerTier = roster[roster.length - 1].tier;
       }
 
-      return { 
-        viable, 
-        nonViable, 
-        criticalGroupSize,
-        targetSpread,
-        criticalTargetTier
+      // Critical members: strictly greater than the critical tier
+      const critical = roster.filter(member => member.value > criticalTierValue);
+
+      // Viable = all remaining members who are not non-viable
+      const viable = roster.filter(
+        member => member.value > weakestDefender && member.value <= criticalTierValue
+      );
+
+      return {
+        critical,
+        viable,
+        nonViable,
+        criticalGroupSize: critical.length,
+        criticalAttackerPower: criticalPowerTier ? formatLargeNumber(criticalTierValue) : '-',
+        defenderSpread: defenderSize,
+        criticalTargetTier: criticalPowerTier
       };
     }
 
@@ -1175,11 +1195,11 @@
       return output;
     }
 
-    function createLineChart(cumulativeData, containerId, isYourClan, criticalTierName) {
+    function createLineChart(yourRoster, defenderRoster, containerId, isYourClan) {
       const svg = $(containerId).querySelector('svg');
       svg.innerHTML = '';
 
-      if (!cumulativeData || cumulativeData.length === 0) {
+      if (yourRoster.length === 0 || defenderRoster.length === 0) {
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('x', '400');
         text.setAttribute('y', '125');
@@ -1191,7 +1211,34 @@
         return;
       }
 
-      const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+      const defenderCount = defenderRoster.length;
+      const defenderSize = getDefenderCount(defenderCount);
+      const defenders = defenderRoster.slice(-defenderSize);
+
+      const minValue = Math.min(
+        Math.min(...yourRoster.map(m => m.value)),
+        Math.min(...defenders.map(d => d.value))
+      );
+      const maxValue = Math.max(
+        Math.max(...yourRoster.map(m => m.value)),
+        Math.max(...defenders.map(d => d.value))
+      );
+
+      const yourData = buildCumulativeData(yourRoster, minValue, maxValue);
+      const defenderData = buildCumulativeData(defenders, minValue, maxValue);
+
+      const crossoverIndex = (() => {
+        for (let i = 0; i < yourData.length; i++) {
+          const attackerCount = yourData[i]?.cumulative ?? 0;
+          const defenderCount = defenderData[i]?.cumulative ?? 0;
+          if (attackerCount < defenderCount) return i;
+        }
+        return null;
+      })();
+
+      const crossoverTier = crossoverIndex !== null ? yourData[crossoverIndex].tier : null;
+
+      const margin = { top: 20, right: 20, bottom: 40, left: 60 };
       const width = 800 - margin.left - margin.right;
       const height = 250 - margin.top - margin.bottom;
 
@@ -1199,66 +1246,149 @@
       g.setAttribute('transform', `translate(${margin.left},${margin.top})`);
       svg.appendChild(g);
 
-      const maxCumulative = Math.max(...cumulativeData.map(d => d.cumulative), 1);
-      const xScale = width / Math.max(cumulativeData.length - 1, 1);
+      const maxCumulative = Math.max(
+        Math.max(...yourData.map(d => d.cumulative), 1),
+        Math.max(...defenderData.map(d => d.cumulative), 1)
+      );
+
+      const xScale = width / Math.max(Math.max(yourData.length, defenderData.length) - 1, 1);
       const yScale = height / maxCumulative;
 
-      const color = isYourClan ? '#2a7ae2' : '#e35d5d';
+      const yourColor = isYourClan ? '#2a7ae2' : '#e35d5d';
+      const defenderColor = isYourClan ? '#e35d5d' : '#2a7ae2';
 
-      let pathData = '';
-      for (let i = 0; i < cumulativeData.length; i++) {
-        const x = i * xScale;
-        const y = height - cumulativeData[i].cumulative * yScale;
-        pathData += (i === 0 ? 'M' : 'L') + ` ${x} ${y}`;
+      // Y-axis gridlines and labels
+      const yAxisSteps = 5;
+      for (let i = 0; i <= yAxisSteps; i++) {
+        const yVal = maxCumulative * (i / yAxisSteps);
+        const y = height - (yVal * yScale);
+
+        const gridline = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        gridline.setAttribute('x1', '0');
+        gridline.setAttribute('y1', y);
+        gridline.setAttribute('x2', width);
+        gridline.setAttribute('y2', y);
+        gridline.setAttribute('stroke', '#e0e0e0');
+        gridline.setAttribute('stroke-width', '1');
+        gridline.setAttribute('opacity', '0.5');
+        g.appendChild(gridline);
+
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', '-8');
+        label.setAttribute('y', y + 4);
+        label.setAttribute('text-anchor', 'end');
+        label.setAttribute('font-size', '11');
+        label.setAttribute('fill', '#666');
+        label.setAttribute('font-weight', '600');
+        label.textContent = Math.round(yVal);
+        g.appendChild(label);
       }
 
-      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('d', pathData);
-      path.setAttribute('fill', 'none');
-      path.setAttribute('stroke', color);
-      path.setAttribute('stroke-width', '2.5');
-      path.setAttribute('stroke-linecap', 'round');
-      path.setAttribute('stroke-linejoin', 'round');
-      g.appendChild(path);
-
-      for (let i = 0; i < cumulativeData.length; i++) {
-        const x = i * xScale;
-        const y = height - cumulativeData[i].cumulative * yScale;
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', x);
-        circle.setAttribute('cy', y);
-        circle.setAttribute('r', '3');
-        circle.setAttribute('fill', color);
-        circle.setAttribute('opacity', '0.8');
-        g.appendChild(circle);
-      }
-
-      if (criticalTierName && criticalTierName !== '-') {
-        for (let i = 0; i < cumulativeData.length; i++) {
-          if (cumulativeData[i].tier === criticalTierName) {
-            const x = i * xScale;
-            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            line.setAttribute('x1', x);
-            line.setAttribute('y1', '0');
-            line.setAttribute('x2', x);
-            line.setAttribute('y2', height);
-            line.setAttribute('stroke', '#f0b94d');
-            line.setAttribute('stroke-width', '2');
-            line.setAttribute('stroke-dasharray', '4,4');
-            line.setAttribute('opacity', '0.7');
-            g.appendChild(line);
+      // X-axis labels (power tiers)
+      const xAxisLabels = ['1q', '1t', '1b', '1m', '1k'];
+      const xAxisIndices = [];
+      for (let label of xAxisLabels) {
+        for (let i = 0; i < yourData.length; i++) {
+          if (yourData[i].tier === label) {
+            xAxisIndices.push(i);
             break;
           }
         }
       }
 
+      for (let i = 0; i < xAxisIndices.length; i++) {
+        const idx = xAxisIndices[i];
+        const x = idx * xScale;
+        const label = xAxisLabels[i];
+
+        const xTickLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        xTickLine.setAttribute('x1', x);
+        xTickLine.setAttribute('y1', height);
+        xTickLine.setAttribute('x2', x);
+        xTickLine.setAttribute('y2', height + 6);
+        xTickLine.setAttribute('stroke', '#666');
+        xTickLine.setAttribute('stroke-width', '1');
+        g.appendChild(xTickLine);
+
+        const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        xLabel.setAttribute('x', x);
+        xLabel.setAttribute('y', height + 20);
+        xLabel.setAttribute('text-anchor', 'middle');
+        xLabel.setAttribute('font-size', '11');
+        xLabel.setAttribute('fill', '#666');
+        xLabel.setAttribute('font-weight', '600');
+        xLabel.textContent = label;
+        g.appendChild(xLabel);
+      }
+
+      // Plot your roster
+      let yourPathData = '';
+      for (let i = 0; i < yourData.length; i++) {
+        const x = i * xScale;
+        const y = height - yourData[i].cumulative * yScale;
+        yourPathData += (i === 0 ? 'M' : 'L') + ` ${x} ${y}`;
+      }
+
+      const yourPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      yourPath.setAttribute('d', yourPathData);
+      yourPath.setAttribute('fill', 'none');
+      yourPath.setAttribute('stroke', yourColor);
+      yourPath.setAttribute('stroke-width', '2.5');
+      yourPath.setAttribute('stroke-linecap', 'round');
+      yourPath.setAttribute('stroke-linejoin', 'round');
+      g.appendChild(yourPath);
+
+      // Plot defender roster
+      let defenderPathData = '';
+      for (let i = 0; i < defenderData.length; i++) {
+        const x = i * xScale;
+        const y = height - defenderData[i].cumulative * yScale;
+        defenderPathData += (i === 0 ? 'M' : 'L') + ` ${x} ${y}`;
+      }
+
+      const defenderPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      defenderPath.setAttribute('d', defenderPathData);
+      defenderPath.setAttribute('fill', 'none');
+      defenderPath.setAttribute('stroke', defenderColor);
+      defenderPath.setAttribute('stroke-width', '2.5');
+      defenderPath.setAttribute('stroke-linecap', 'round');
+      defenderPath.setAttribute('stroke-linejoin', 'round');
+      defenderPath.setAttribute('stroke-dasharray', '5,5');
+      g.appendChild(defenderPath);
+
+      // Crossover marker
+      if (crossoverIndex !== null) {
+        const crossX = crossoverIndex * xScale;
+
+        const crossoverLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        crossoverLine.setAttribute('x1', crossX);
+        crossoverLine.setAttribute('y1', 0);
+        crossoverLine.setAttribute('x2', crossX);
+        crossoverLine.setAttribute('y2', height);
+        crossoverLine.setAttribute('stroke', '#d4a52d');
+        crossoverLine.setAttribute('stroke-width', '2');
+        crossoverLine.setAttribute('stroke-dasharray', '6 6');
+        crossoverLine.setAttribute('opacity', '0.9');
+        g.appendChild(crossoverLine);
+
+        const crossoverLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        crossoverLabel.setAttribute('x', crossX + 6);
+        crossoverLabel.setAttribute('y', 18);
+        crossoverLabel.setAttribute('fill', '#8d6000');
+        crossoverLabel.setAttribute('font-size', '11');
+        crossoverLabel.setAttribute('font-weight', '700');
+        crossoverLabel.textContent = `Critical: ${crossoverTier}`;
+        g.appendChild(crossoverLabel);
+      }
+
+      // Add axes
       const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       xAxis.setAttribute('x1', '0');
       xAxis.setAttribute('y1', height);
       xAxis.setAttribute('x2', width);
       xAxis.setAttribute('y2', height);
-      xAxis.setAttribute('stroke', '#999');
-      xAxis.setAttribute('stroke-width', '1');
+      xAxis.setAttribute('stroke', '#333');
+      xAxis.setAttribute('stroke-width', '2');
       g.appendChild(xAxis);
 
       const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1266,26 +1396,29 @@
       yAxis.setAttribute('y1', '0');
       yAxis.setAttribute('x2', '0');
       yAxis.setAttribute('y2', height);
-      yAxis.setAttribute('stroke', '#999');
-      yAxis.setAttribute('stroke-width', '1');
+      yAxis.setAttribute('stroke', '#333');
+      yAxis.setAttribute('stroke-width', '2');
       g.appendChild(yAxis);
 
+      // Labels
       const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       yLabel.setAttribute('x', '-' + (height / 2));
-      yLabel.setAttribute('y', '-25');
+      yLabel.setAttribute('y', '-45');
       yLabel.setAttribute('text-anchor', 'middle');
       yLabel.setAttribute('transform', 'rotate(-90)');
       yLabel.setAttribute('font-size', '12');
-      yLabel.setAttribute('fill', '#666');
+      yLabel.setAttribute('font-weight', '700');
+      yLabel.setAttribute('fill', '#333');
       yLabel.textContent = 'Cumulative Count';
       g.appendChild(yLabel);
 
       const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       xLabel.setAttribute('x', width / 2);
-      xLabel.setAttribute('y', height + 25);
+      xLabel.setAttribute('y', height + 35);
       xLabel.setAttribute('text-anchor', 'middle');
       xLabel.setAttribute('font-size', '12');
-      xLabel.setAttribute('fill', '#666');
+      xLabel.setAttribute('font-weight', '700');
+      xLabel.setAttribute('fill', '#333');
       xLabel.textContent = 'Power Tier';
       g.appendChild(xLabel);
     }
@@ -1298,76 +1431,41 @@
         return { resets: 0, score: 0 };
       }
 
-      const resetReq = getResetRequirement(defenderCount);
-      const resetEstimate = calculateResetEstimate(attackerRoster, defenderRoster);
+      const resetReq = getDefenderCount(defenderCount);
 
-      const defenderTargets = defenderRoster.map((unit, idx) => ({ ...unit, availableForScore: true, beaten: 0 }));
-      const attackerAttacks = attackerRoster.map(unit => ({ ...unit, remainingAttacks: 5 }));
+      const defenders = defenderRoster.map(d => ({ ...d, available: true }));
+      const attackers = attackerRoster.map(a => ({ ...a, attacks: 5 }));
 
-      let totalScore = 0;
       let totalResets = 0;
+      let totalScore = 0;
+      let beatCount = 0;
 
-      if (resetEstimate > 0) {
-        const skipInterval = 5 - resetEstimate + 1;
+      let changed = true;
+      while (changed) {
+        changed = false;
 
-        for (let offset = 0; offset < skipInterval; offset++) {
-          let changedThisRound = true;
-          while (changedThisRound) {
-            changedThisRound = false;
+        for (let a of attackers) {
+          if (a.attacks <= 0) continue;
 
-            for (let i = offset; i < attackerCount; i += skipInterval) {
-              const attacker = attackerAttacks[i];
-              if (attacker.remainingAttacks <= 0) continue;
-
-              for (let j = defenderTargets.length - 1; j >= 0 && attacker.remainingAttacks > 0; j--) {
-                const target = defenderTargets[j];
-                if (target.value < attacker.value && target.availableForScore) {
-                  totalScore += target.score;
-                  target.availableForScore = false;
-                  attacker.remainingAttacks--;
-                  target.beaten++;
-                  changedThisRound = true;
-                }
-              }
-            }
-
-            const beatCount = defenderTargets.filter(d => d.beaten > 0).length;
-            if (beatCount >= resetReq) {
-              totalResets++;
-              defenderTargets.forEach(d => {
-                d.availableForScore = true;
-                d.beaten = 0;
-              });
-            }
-          }
-        }
-      }
-
-      let changedFinal = true;
-      while (changedFinal) {
-        changedFinal = false;
-        for (let attacker of attackerAttacks) {
-          if (attacker.remainingAttacks <= 0) continue;
-
-          for (let j = defenderTargets.length - 1; j >= 0 && attacker.remainingAttacks > 0; j--) {
-            const target = defenderTargets[j];
-            if (target.value < attacker.value && target.availableForScore) {
-              totalScore += target.score;
-              target.availableForScore = false;
-              attacker.remainingAttacks--;
-              target.beaten++;
-              changedFinal = true;
+          for (let i = defenders.length - 1; i >= 0; i--) {
+            const d = defenders[i];
+            if (d.available && a.value > d.value) {
+              totalScore += d.score;
+              d.available = false;
+              a.attacks--;
+              beatCount++;
+              changed = true;
+              break;
             }
           }
         }
 
-        const beatCount = defenderTargets.filter(d => d.beaten > 0).length;
         if (beatCount >= resetReq) {
           totalResets++;
-          defenderTargets.forEach(d => {
-            d.availableForScore = true;
-            d.beaten = 0;
-          });
+          beatCount = 0;
+          defenders.forEach(d => d.available = true);
+
+          if (totalResets >= 4) break;
         }
       }
 
@@ -1420,42 +1518,31 @@
 
         updateStatus('Analyzing members...', 'ready');
 
-        // For Your Clan: attacking enemy's reset targets (weakest resetReq members)
         const yourAnalysis = analyzeMembers(yourFinal, enemyFinal);
-        
-        // For Enemy Clan: attacking your clan's reset targets (weakest resetReq members)
         const enemyAnalysis = analyzeMembers(enemyFinal, yourFinal);
 
-        $('yourClanUseful').textContent = formatAnalysis(yourAnalysis.viable);
-        $('yourClanUseless').textContent = formatAnalysis(yourAnalysis.nonViable);
-        $('enemyClanUseful').textContent = formatAnalysis(enemyAnalysis.viable);
-        $('enemyClanUseless').textContent = formatAnalysis(enemyAnalysis.nonViable);
+        $('yourCriticalMembers').textContent = formatAnalysis(yourAnalysis.critical);
+        $('yourViableMembers').textContent = formatAnalysis(yourAnalysis.viable);
+        $('yourNonViableMembers').textContent = formatAnalysis(yourAnalysis.nonViable);
+
+        $('enemyCriticalMembers').textContent = formatAnalysis(enemyAnalysis.critical);
+        $('enemyViableMembers').textContent = formatAnalysis(enemyAnalysis.viable);
+        $('enemyNonViableMembers').textContent = formatAnalysis(enemyAnalysis.nonViable);
 
         $('yourCriticalGroupSize').textContent = yourAnalysis.criticalGroupSize;
-        $('yourEnemySpread').textContent = yourAnalysis.targetSpread;
+        $('yourCriticalAttackerPower').textContent = yourAnalysis.criticalAttackerPower;
+        $('yourEnemySpread').textContent = yourAnalysis.defenderSpread;
         $('yourCriticalTargetTier').textContent = yourAnalysis.criticalTargetTier;
 
         $('enemyCriticalGroupSize').textContent = enemyAnalysis.criticalGroupSize;
-        $('enemyYourSpread').textContent = enemyAnalysis.targetSpread;
+        $('enemyCriticalAttackerPower').textContent = enemyAnalysis.criticalAttackerPower;
+        $('enemyYourSpread').textContent = enemyAnalysis.defenderSpread;
         $('enemyCriticalTargetTier').textContent = enemyAnalysis.criticalTargetTier;
 
         updateStatus('Building distribution charts...', 'ready');
 
-        // Your Clan: cumulative distribution of enemy's reset targets
-        const yourTargetData = buildCumulativeDistribution(yourFinal, enemyFinal);
-        createLineChart(yourTargetData, 'yourChart', true, yourAnalysis.criticalTargetTier);
-
-        // Enemy Clan: cumulative distribution of your clan's reset targets (excluding top 5)
-        const enemyTargetData = buildCumulativeDistribution(enemyFinal, yourFinal);
-        createLineChart(enemyTargetData, 'enemyChart', false, enemyAnalysis.criticalTargetTier);
-
-        updateStatus('Estimating resets...', 'ready');
-
-        const yourResetEst = calculateResetEstimate(yourFinal, enemyFinal);
-        const enemyResetEst = calculateResetEstimate(enemyFinal, yourFinal);
-
-        $('yourResetEstimate').textContent = `${yourResetEst}`;
-        $('enemyResetEstimate').textContent = `${enemyResetEst}`;
+        createLineChart(yourFinal, enemyFinal, 'yourChart', true);
+        createLineChart(enemyFinal, yourFinal, 'enemyChart', false);
 
         updateStatus('Running battle simulation...', 'ready');
 
@@ -1468,6 +1555,7 @@
         $('enemySimScore').textContent = enemyBattle.score;
 
         updateStatus('✅ Simulation complete!', 'success');
+
       } catch (error) {
         updateStatus('❌ Error: ' + error.message, 'error');
         console.error(error);
