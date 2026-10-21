@@ -1226,6 +1226,11 @@
 
       const yourData = buildCumulativeData(yourRoster, minValue, maxValue);
       const defenderData = buildCumulativeData(defenders, minValue, maxValue);
+      const attackingData = (isYourClan ? yourData : defenderData);
+      const attackerShiftedData = attackingData.map((point, index) => ({
+        ...point,
+        xIndex: Math.min(index + 1, attackingData.length - 1)
+      }));
 
       const crossoverIndex = (() => {
         for (let i = 0; i < yourData.length; i++) {
@@ -1256,6 +1261,7 @@
 
       const yourColor = isYourClan ? '#2a7ae2' : '#e35d5d';
       const defenderColor = isYourClan ? '#e35d5d' : '#2a7ae2';
+      const attackerShiftColor = '#2ec66c';
 
       const yAxisSteps = 5;
       for (let i = 0; i <= yAxisSteps; i++) {
@@ -1351,6 +1357,24 @@
       defenderPath.setAttribute('stroke-linejoin', 'round');
       defenderPath.setAttribute('stroke-dasharray', '5,5');
       g.appendChild(defenderPath);
+
+      let attackerShiftPathData = '';
+      for (let i = 0; i < attackerShiftedData.length; i++) {
+        const point = attackerShiftedData[i];
+        const x = point.xIndex * xScale;
+        const y = height - point.cumulative * yScale;
+        attackerShiftPathData += (i === 0 ? 'M' : 'L') + ` ${x} ${y}`;
+      }
+
+      const attackerShiftPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      attackerShiftPath.setAttribute('d', attackerShiftPathData);
+      attackerShiftPath.setAttribute('fill', 'none');
+      attackerShiftPath.setAttribute('stroke', attackerShiftColor);
+      attackerShiftPath.setAttribute('stroke-width', '2.5');
+      attackerShiftPath.setAttribute('stroke-linecap', 'round');
+      attackerShiftPath.setAttribute('stroke-linejoin', 'round');
+      attackerShiftPath.setAttribute('opacity', '0.95');
+      g.appendChild(attackerShiftPath);
 
       if (crossoverIndex !== null) {
         const crossX = crossoverIndex * xScale;
