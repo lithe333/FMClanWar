@@ -1086,18 +1086,16 @@
 
     function buildCumulativeData(roster, minValue, maxValue) {
       const data = [];
-      let cumulative = 0;
 
-      for (let tier of [...powerTiers].reverse()) {
+      for (let tier of powerTiers) {
         const tierValue = tier.value;
         if (tierValue >= minValue && tierValue <= maxValue) {
-          const count = roster.filter(m => m.value === tierValue).length;
-          cumulative += count;
-          data.push({ tier: tier.name, value: tierValue, count, cumulative });
+          const count = roster.filter(member => member.value >= tierValue).length;
+          data.push({ tier: tier.name, value: tierValue, count, cumulative: count });
         }
       }
 
-      return data.reverse();
+      return data;
     }
 
     function analyzeMembers(roster, defenderRoster) {
