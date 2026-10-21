@@ -948,30 +948,35 @@
       return closestTier;
     }
 
+    function parsePowerEntry(entry) {
+      const trimmed = entry.trim().toLowerCase().replace(/\s+/g, '');
+      if (!trimmed) return null;
+
+      const exactTier = powerTiers.find(tier => tier.name.toLowerCase() === trimmed);
+      if (exactTier) return exactTier.value;
+
+      const match = /^([0-9]+(?:\.[0-9]+)?)([qtbmk])?$/.exec(trimmed);
+      if (!match) return null;
+
+      const value = parseFloat(match[1]);
+      const suffix = match[2] || '';
+      const multipliers = { q: 1e15, t: 1e12, b: 1e9, m: 1e6, k: 1e3 };
+      const numericValue = value * (multipliers[suffix] || 1);
+
+      return Number.isFinite(numericValue) && numericValue > 0 ? numericValue : null;
+    }
+
     function parseDirectInput(input) {
       if (!input.trim()) return [];
 
-      const entries = input.split(',').map(e => e.trim().toLowerCase()).filter(e => e.length > 0);
+      const entries = input.split(',').map(e => e.trim()).filter(e => e.length > 0);
       const roster = [];
 
       for (let entry of entries) {
-        let found = false;
-
-        for (let tier of powerTiers) {
-          if (entry === tier.name.toLowerCase()) {
-            roster.push({ tier: tier.name, value: tier.value });
-            found = true;
-            break;
-          }
-        }
-
-        if (!found) {
-          const num = parseFloat(entry);
-          if (!isNaN(num) && num > 0) {
-            const matchedTier = findClosestTierLower(num);
-            roster.push({ tier: matchedTier.name, value: matchedTier.value });
-            found = true;
-          }
+        const numericValue = parsePowerEntry(entry);
+        if (numericValue !== null) {
+          const matchedTier = findClosestTierLower(numericValue);
+          roster.push({ tier: matchedTier.name, value: matchedTier.value });
         }
       }
 
