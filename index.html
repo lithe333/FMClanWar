@@ -862,6 +862,7 @@
     const $ = id => document.getElementById(id);
 
     const powerTiers = [
+      { name: '2q', value: 2e15, type: 't' },
       { name: '1q', value: 1e15, type: 't' },
       { name: '500t', value: 500e12, type: 't' },
       { name: '200t', value: 200e12, type: 't' },
@@ -1129,10 +1130,8 @@
 
       const weakestDefender = defenders[defenders.length - 1].value;
 
-      // Non-viable members: equal to or weaker than the weakest defender
       const nonViable = roster.filter(member => member.value <= weakestDefender);
 
-      // Find the critical power tier from the cumulative-count crossover
       const minValue = Math.min(
         Math.min(...roster.map(m => m.value)),
         Math.min(...defenders.map(d => d.value))
@@ -1164,10 +1163,8 @@
         criticalPowerTier = roster[roster.length - 1].tier;
       }
 
-      // Critical members: strictly greater than the critical tier
       const critical = roster.filter(member => member.value > criticalTierValue);
 
-      // Viable = all remaining members who are not non-viable
       const viable = roster.filter(
         member => member.value > weakestDefender && member.value <= criticalTierValue
       );
@@ -1255,7 +1252,6 @@
       const yourColor = isYourClan ? '#2a7ae2' : '#e35d5d';
       const defenderColor = isYourClan ? '#e35d5d' : '#2a7ae2';
 
-      // Y-axis gridlines and labels
       const yAxisSteps = 5;
       for (let i = 0; i <= yAxisSteps; i++) {
         const yVal = maxCumulative * (i / yAxisSteps);
@@ -1282,8 +1278,7 @@
         g.appendChild(label);
       }
 
-      // X-axis labels (power tiers)
-      const xAxisLabels = ['1q', '1t', '1b', '1m', '1k'];
+      const xAxisLabels = ['2q', '1q', '1t', '1b', '1m', '1k'];
       const xAxisIndices = [];
       for (let label of xAxisLabels) {
         for (let i = 0; i < yourData.length; i++) {
@@ -1319,7 +1314,6 @@
         g.appendChild(xLabel);
       }
 
-      // Plot your roster
       let yourPathData = '';
       for (let i = 0; i < yourData.length; i++) {
         const x = i * xScale;
@@ -1336,7 +1330,6 @@
       yourPath.setAttribute('stroke-linejoin', 'round');
       g.appendChild(yourPath);
 
-      // Plot defender roster
       let defenderPathData = '';
       for (let i = 0; i < defenderData.length; i++) {
         const x = i * xScale;
@@ -1354,7 +1347,6 @@
       defenderPath.setAttribute('stroke-dasharray', '5,5');
       g.appendChild(defenderPath);
 
-      // Crossover marker
       if (crossoverIndex !== null) {
         const crossX = crossoverIndex * xScale;
 
@@ -1379,7 +1371,6 @@
         g.appendChild(crossoverLabel);
       }
 
-      // Add axes
       const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       xAxis.setAttribute('x1', '0');
       xAxis.setAttribute('y1', height);
@@ -1398,7 +1389,6 @@
       yAxis.setAttribute('stroke-width', '2');
       g.appendChild(yAxis);
 
-      // Labels
       const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       yLabel.setAttribute('x', '-' + (height / 2));
       yLabel.setAttribute('y', '-45');
