@@ -5,653 +5,187 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FM Clan War Calculator</title>
   <style>
-    :root {
-      --bg: #edf7ef;
-      --bg-2: #dfeee3;
-      --panel: #f7fff9;
-      --panel-strong: #e7f6eb;
-      --card: #f2fbf4;
-      --border: #a9d8b4;
-      --green: #5bbd6d;
-      --green-deep: #1d5a3d;
-      --green-ink: #0d2d1d;
-      --blue: #2a7ae2;
-      --blue-soft: #dfeeff;
-      --blue-deep: #184a97;
-      --red: #e35d5d;
-      --red-soft: #ffe5e5;
-      --red-deep: #8c2a2a;
-      --text: #153123;
-      --muted: #53715f;
-      --gold: #f0b94d;
-      --shadow: 0 12px 30px rgba(9, 51, 34, 0.12);
-      --radius: 18px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html, body {
-      margin: 0;
-      min-height: 100%;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
-      color: var(--text);
-    }
-
-    body {
-      padding: 22px 18px 36px;
-    }
-
-    .page {
-      max-width: 1600px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      margin: 0 0 18px;
-      font-size: clamp(2rem, 3vw, 3.1rem);
-      letter-spacing: 0.04em;
-      color: var(--green-ink);
-      text-align: center;
-      text-shadow: 0 1px 0 rgba(255,255,255,0.9);
-    }
-
-    .instructions,
-    .panel,
-    .analysis-box,
-    .summary-box,
-    .roster-display,
-    .stat-box,
-    .chart-box {
-      background: rgba(255,255,255,0.55);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-    }
-
-    .instructions {
-      padding: 18px 20px;
-      border-radius: var(--radius);
-      border-left: 6px solid var(--green);
-      background: linear-gradient(180deg, rgba(255,255,255,0.72), rgba(242,251,244,0.8));
-      margin-bottom: 20px;
-    }
-
-    .instructions h2 {
-      margin: 0 0 10px;
-      color: var(--green-deep);
-      font-size: clamp(1.1rem, 2vw, 1.5rem);
-    }
-
-    .instructions p {
-      margin: 6px 0;
-      color: var(--muted);
-      font-size: 0.98rem;
-      line-height: 1.5;
-    }
-
-    .instructions strong {
-      color: var(--green-ink);
-    }
-
-    .filter-wrap {
-      text-align: center;
-      margin: 18px auto 20px;
-      padding: 0;
-    }
-
-    .filter-wrap h3 {
-      margin: 0 0 12px;
-      color: var(--green-deep);
-      font-size: 1.1rem;
-      user-select: none;
-      display: inline-block;
-      width: 100%;
-    }
-
-    .filter-buttons {
-      display: visible;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px;
-      padding: 12px 0 0 0;
-    }
-
-    .filter-buttons.visible {
-      display: flex;
-    }
-
-    .filter-btn,
-    button {
-      appearance: none;
-      border: none;
-      border-radius: 12px;
-      padding: 11px 18px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
-      font-size: 0.95rem;
-      box-shadow: 0 4px 12px rgba(17, 53, 34, 0.12);
-    }
-
-    .filter-btn {
-      background: linear-gradient(180deg, #f5fff7, #d9f1df);
-      color: var(--green-ink);
-      border: 1px solid var(--border);
-    }
-
-    .filter-btn.active {
-      background: linear-gradient(180deg, var(--green), #6ddf85);
-      color: #072b18;
-      border-color: rgba(16, 53, 37, 0.25);
-    }
-
-    .filter-btn:hover,
-    button:hover {
-      transform: translateY(-2px);
-      filter: brightness(1.03);
-    }
-
-    .input-controls {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 22px;
-      margin-bottom: 20px;
-    }
-
-    .simulate-section {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-      margin-bottom: 22px;
-      grid-column: 1 / -1;
-    }
-
-    .simulate-button-container {
-      flex-shrink: 0;
-    }
-
-    .simulate-button-container button {
-      background: linear-gradient(180deg, var(--green), #73d77c);
-      color: #072b18;
-      padding: 15px 38px;
-      font-size: 1.08rem;
-      letter-spacing: 0.06em;
-      white-space: nowrap;
-    }
-
-    .status-display {
-      flex: 1;
-      background: rgba(255,255,255,0.55);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px 16px;
-      min-height: 50px;
-      display: flex;
-      align-items: center;
-      font-family: "Courier New", monospace;
-      font-size: 0.92rem;
-      color: var(--muted);
-    }
-
-    .status-display.ready {
-      color: var(--green-deep);
-      font-weight: 700;
-    }
-
-    .status-display.success {
-      color: var(--green-deep);
-      font-weight: 700;
-      background: linear-gradient(180deg, rgba(91,189,109,0.1), rgba(91,189,109,0.05));
-      border-color: rgba(91,189,109,0.4);
-    }
-
-    .status-display.error {
-      color: var(--red-deep);
-      font-weight: 700;
-      background: linear-gradient(180deg, rgba(227,93,93,0.1), rgba(227,93,93,0.05));
-      border-color: rgba(227,93,93,0.4);
-    }
-
-    .app-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 22px;
-      align-items: start;
-    }
-
-    .column {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .column-header {
-      font-size: clamp(1.3rem, 2vw, 1.9rem);
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      padding: 12px 16px;
-      border-radius: 14px;
-      border: 1px solid transparent;
-      text-align: center;
-      box-shadow: var(--shadow);
-    }
-
-    .your-clan .column-header {
-      background: linear-gradient(180deg, var(--blue-soft), #dfeeff);
-      color: var(--blue-deep);
-      border-color: rgba(42, 122, 226, 0.55);
-    }
-
-    .enemy-clan .column-header {
-      background: linear-gradient(180deg, var(--red-soft), #ffe7e7);
-      color: var(--red-deep);
-      border-color: rgba(227, 93, 93, 0.6);
-    }
-
-    .panel {
-      padding: 18px;
-      border-radius: var(--radius);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .your-clan .panel {
-      border-left: 7px solid var(--blue);
-      background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(222,238,255,0.75));
-    }
-
-    .enemy-clan .panel {
-      border-left: 7px solid var(--red);
-      background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,233,233,0.78));
-    }
-
-    .input-row {
-      display: grid;
-      grid-template-columns: 110px 1fr;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .input-row label {
-      font-weight: 700;
-      color: var(--green-deep);
-      font-size: 0.88rem;
-    }
-
-    .power-label {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(91, 189, 109, 0.12);
-      border: 1px solid rgba(29, 90, 61, 0.25);
-      color: var(--green-deep);
-      font-weight: 700;
-      font-size: 0.8rem;
-    }
-
-    .input-row input {
-      width: 100%;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-family: "Courier New", monospace;
-      font-size: 0.96rem;
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-    }
-
-    .your-clan .input-row input {
-      border-color: rgba(42, 122, 226, 0.45);
-      background: linear-gradient(180deg, #fbfdff, #eef6ff);
-    }
-
-    .enemy-clan .input-row input {
-      border-color: rgba(227, 93, 93, 0.45);
-      background: linear-gradient(180deg, #fffdfd, #fff0f0);
-    }
-
-    .input-row input:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(91, 189, 109, 0.18);
-    }
-
-    .first-row-input {
-      background: linear-gradient(180deg, #f7fff7, #edf8f0) !important;
-      border-color: rgba(91, 189, 109, 0.7) !important;
-    }
-
-    .tier-section {
-      display: none;
-    }
-
-    .tier-section.visible {
-      display: block;
-    }
-
-    .warning-box {
-      display: none;
-      margin-top: 12px;
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-size: 0.94rem;
-      font-weight: 700;
-      border-left: 5px solid var(--red);
-      background: rgba(227, 93, 93, 0.08);
-      color: var(--red-deep);
-    }
-
-    .result-label {
-      margin: 6px 0 8px;
-      font-weight: 800;
-      font-size: 0.98rem;
-      letter-spacing: 0.04em;
-    }
-
-    .your-clan .result-label {
-      color: var(--blue-deep);
-    }
-
-    .enemy-clan .result-label {
-      color: var(--red-deep);
-    }
-
-    .summary-box,
-    .roster-display,
-    .analysis-box,
-    .stat-box,
-    .chart-box {
-      border-radius: 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.78), rgba(245,250,246,0.75));
-      border: 1px solid var(--border);
-    }
-
-    .summary-box,
-    .roster-display {
-      min-height: 120px;
-      padding: 14px 16px;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      font-family: "Courier New", monospace;
-      font-size: 0.87rem;
-      line-height: 1.6;
-    }
-
-    .roster-display {
-      min-height: 200px;
-      max-height: 420px;
-      overflow-y: auto;
-    }
-
-    .analysis-section {
-      margin-top: 28px;
-      margin-bottom: 12px;
-    }
-
-    .analysis-header {
-      margin: 0 0 14px;
-      padding-bottom: 10px;
-      border-bottom: 3px solid var(--green);
-      color: var(--green-deep);
-      font-size: clamp(1.4rem, 2vw, 2rem);
-      letter-spacing: 0.04em;
-    }
-
-    .analysis-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 40px;
-      margin-bottom: 20px;
-    }
-
-    .analysis-side {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .analysis-side-title {
-      font-size: 1.2rem;
-      font-weight: 800;
-      padding: 12px 14px;
-      border-radius: 12px;
-      text-align: center;
-    }
-
-    .your-clan-side .analysis-side-title {
-      background: linear-gradient(180deg, var(--blue-soft), #e8f2ff);
-      color: var(--blue-deep);
-      border: 1px solid rgba(42, 122, 226, 0.4);
-    }
-
-    .enemy-clan-side .analysis-side-title {
-      background: linear-gradient(180deg, var(--red-soft), #ffe8e8);
-      color: var(--red-deep);
-      border: 1px solid rgba(227, 93, 93, 0.4);
-    }
-
-    .critical-values {
-      background: rgba(255,255,255,0.55);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-family: "Courier New", monospace;
-      font-size: 0.85rem;
-      line-height: 1.6;
-    }
-
-    .critical-value-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 0;
-    }
-
-    .critical-value-label {
-      font-weight: 700;
-      color: var(--muted);
-    }
-
-    .critical-value-number {
-      font-weight: 800;
-      color: var(--red-deep);
-      min-width: 80px;
-      text-align: right;
-    }
-
-    .chart-box {
-      padding: 16px;
-      min-height: 280px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .chart-svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    .analysis-box {
-      padding: 14px 16px;
-      min-height: 100px;
-      max-height: 280px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      font-family: "Courier New", monospace;
-      font-size: 0.82rem;
-      line-height: 1.55;
-    }
-
-    .analysis-box.critical {
-      border-left: 6px solid var(--gold);
-      background: linear-gradient(180deg, rgba(255,250,236,0.8), rgba(255,248,235,0.82));
-    }
-
-    .analysis-box.viable {
-      border-left: 6px solid var(--green);
-      background: linear-gradient(180deg, rgba(91,189,109,0.08), rgba(91,189,109,0.05));
-    }
-
-    .analysis-box.non-viable {
-      border-left: 6px solid var(--red);
-      background: linear-gradient(180deg, rgba(227,93,93,0.08), rgba(227,93,93,0.05));
-    }
-
-    .analysis-title {
-      font-size: 0.9rem;
-      font-weight: 800;
-      margin-bottom: 10px;
-      letter-spacing: 0.05em;
-    }
-
-    .analysis-box.critical .analysis-title { color: #8d6000; }
-    .analysis-box.viable .analysis-title { color: var(--green-deep); }
-    .analysis-box.non-viable .analysis-title { color: var(--red-deep); }
-
-    .stats-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 40px;
-      margin-top: 18px;
-    }
-
-    .stat-column {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .stat-column-title {
-      font-weight: 800;
-      text-align: center;
-      padding: 8px 0;
-      font-size: 1.1rem;
-    }
-
-    .your-clan-stat .stat-column-title {
-      color: var(--blue-deep);
-    }
-
-    .enemy-clan-stat .stat-column-title {
-      color: var(--red-deep);
-    }
-
-    .stats-boxes {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .stat-box {
-      text-align: center;
-      padding: 18px 16px;
-    }
-
-    .stat-label {
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin-bottom: 10px;
-      font-weight: 700;
-    }
-
-    .stat-value {
-      font-size: clamp(1.5rem, 2.8vw, 2.1rem);
-      font-weight: 800;
-      font-family: "Courier New", monospace;
-      color: var(--green-deep);
-    }
-
-    @media (max-width: 1200px) {
-      .analysis-container,
-      .stats-container {
-        grid-template-columns: 1fr;
-        gap: 22px;
-      }
-    }
-
-    @media (max-width: 980px) {
-      .input-controls {
-        grid-template-columns: 1fr;
-        gap: 22px;
-      }
-
-      .simulate-button-container button {
-        width: 100%;
-      }
-    }
-
-    @media (max-width: 640px) {
-      body {
-        padding: 12px 10px 24px;
-      }
-
-      .instructions,
-      .panel,
-      .summary-box,
-      .roster-display,
-      .analysis-box,
-      .stat-box,
-      .chart-box {
-        border-radius: 12px;
-      }
-
-      .input-row {
-        grid-template-columns: 1fr;
-        gap: 8px;
-      }
-
-      .input-row label {
-        font-size: 0.8rem;
-      }
-
-      .filter-buttons {
-        gap: 8px;
-      }
-
-      .filter-btn {
-        padding: 9px 14px;
-        font-size: 0.85rem;
-      }
-
-      .simulate-button-container button {
-        width: 100%;
-        padding: 12px 24px;
-        font-size: 1rem;
-      }
-
-      .simulate-section {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .simulate-button-container {
-        width: 100%;
-      }
-
-      .status-display {
-        width: 100%;
-        font-size: 0.85rem;
-        min-height: 45px;
-      }
-
-      .summary-box,
-      .roster-display,
-      .analysis-box {
-        font-size: 0.76rem;
-      }
-
-      .analysis-container,
-      .stats-container {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-    }
+    :root{
+      --bg:#edf7ef;--bg-2:#dfeee3;--panel:#f7fff9;--panel-strong:#e7f6eb;--card:#f2fbf4;--border:#a9d8b4;--green:#5bbd6d;--green-deep:#1d5a3d;--green-ink:#0d2d1d;--blue:#2a7ae2;--blue-soft:#dfeeff;--blue-deep:#184a97;--red:#e35d5d;--red-soft:#ffe5e5;--red-deep:#8c2a2a;--text:#153123;--muted:#53715f;--gold:#f0b94d;--shadow:0 12px 30px rgba(9,51,34,.12);--radius:18px
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);color:var(--text)}
+    body{padding:22px 18px 36px}
+    .page{max-width:1600px;margin:0 auto}
+    h1{margin:0 0 18px;font-size:clamp(2rem,3vw,3.1rem);letter-spacing:.04em;color:var(--green-ink);text-align:center;text-shadow:0 1px 0 rgba(255,255,255,.9)}
+    .instructions,.panel,.analysis-box,.summary-box,.roster-display,.chart-box{background:rgba(255,255,255,.55);border:1px solid var(--border);box-shadow:var(--shadow)}
+    .instructions{padding:18px 20px;border-radius:var(--radius);border-left:6px solid var(--green);background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(242,251,244,.8));margin-bottom:20px}
+    .instructions h2{margin:0 0 10px;color:var(--green-deep);font-size:clamp(1.1rem,2vw,1.5rem)}
+    .instructions p{margin:6px 0;color:var(--muted);font-size:.98rem;line-height:1.5}
+    .instructions strong{color:var(--green-ink)}
+    .filter-wrap{text-align:center;margin:18px auto 20px}
+    .filter-wrap h3{margin:0 0 12px;color:var(--green-deep);font-size:1.1rem;user-select:none;display:inline-block;width:100%}
+    .filter-buttons{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;padding:12px 0 0}
+    .filter-btn,button{appearance:none;border:none;border-radius:12px;padding:11px 18px;font-weight:700;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;font-size:.95rem;box-shadow:0 4px 12px rgba(17,53,34,.12)}
+    .filter-btn{background:linear-gradient(180deg,#f5fff7,#d9f1df);color:var(--green-ink);border:1px solid var(--border)}
+    .filter-btn.active{background:linear-gradient(180deg,var(--green),#6ddf85);color:#072b18;border-color:rgba(16,53,37,.25)}
+    .filter-btn:hover,button:hover{transform:translateY(-2px);filter:brightness(1.03)}
+    .input-controls{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:20px}
+    .simulate-section{display:flex;gap:16px;align-items:flex-start;margin-bottom:22px;grid-column:1/-1}
+    .simulate-button-container{flex-shrink:0}
+    .simulate-button-container button{background:linear-gradient(180deg,var(--green),#73d77c);color:#072b18;padding:15px 38px;font-size:1.08rem;letter-spacing:.06em;white-space:nowrap}
+    .status-display{flex:1;background:rgba(255,255,255,.55);border:1px solid var(--border);border-radius:14px;padding:14px 16px;min-height:50px;display:flex;align-items:center;font-family:"Courier New",monospace;font-size:.92rem;color:var(--muted)}
+    .status-display.ready{color:var(--green-deep);font-weight:700}
+    .status-display.success{color:var(--green-deep);font-weight:700;background:linear-gradient(180deg,rgba(91,189,109,.1),rgba(91,189,109,.05));border-color:rgba(91,189,109,.4)}
+    .status-display.error{color:var(--red-deep);font-weight:700;background:linear-gradient(180deg,rgba(227,93,93,.1),rgba(227,93,93,.05));border-color:rgba(227,93,93,.4)}
+    .app-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+    .column{display:flex;flex-direction:column;gap:16px}
+    .column-header{font-size:clamp(1.3rem,2vw,1.9rem);font-weight:800;letter-spacing:.04em;padding:12px 16px;border-radius:14px;border:1px solid transparent;text-align:center;box-shadow:var(--shadow)}
+    .your-clan .column-header{background:linear-gradient(180deg,var(--blue-soft),#dfeeff);color:var(--blue-deep);border-color:rgba(42,122,226,.55)}
+    .enemy-clan .column-header{background:linear-gradient(180deg,var(--red-soft),#ffe7e7);color:var(--red-deep);border-color:rgba(227,93,93,.6)}
+    .panel{padding:18px;border-radius:var(--radius);position:relative;overflow:hidden}
+    .your-clan .panel{border-left:7px solid var(--blue);background:linear-gradient(180deg,rgba(255,255,255,.8),rgba(222,238,255,.75))}
+    .enemy-clan .panel{border-left:7px solid var(--red);background:linear-gradient(180deg,rgba(255,255,255,.8),rgba(255,233,233,.78))}
+    .input-row{display:grid;grid-template-columns:110px 1fr;align-items:center;gap:12px;margin-bottom:12px}
+    .input-row label{font-weight:700;color:var(--green-deep);font-size:.88rem}
+    .power-label{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(91,189,109,.12);border:1px solid rgba(29,90,61,.25);color:var(--green-deep);font-weight:700;font-size:.8rem}
+    .input-row input{width:100%;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-family:"Courier New",monospace;font-size:.96rem;color:var(--text);outline:none;transition:border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .your-clan .input-row input{border-color:rgba(42,122,226,.45);background:linear-gradient(180deg,#fbfdff,#eef6ff)}
+    .enemy-clan .input-row input{border-color:rgba(227,93,93,.45);background:linear-gradient(180deg,#fffdfd,#fff0f0)}
+    .input-row input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(91,189,109,.18)}
+    .first-row-input{background:linear-gradient(180deg,#f7fff7,#edf8f0)!important;border-color:rgba(91,189,109,.7)!important}
+    .tier-section{display:none}.tier-section.visible{display:block}
+    .warning-box{display:none;margin-top:12px;border-radius:12px;padding:12px 14px;font-size:.94rem;font-weight:700;border-left:5px solid var(--red);background:rgba(227,93,93,.08);color:var(--red-deep)}
+    .result-label{margin:6px 0 8px;font-weight:800;font-size:.98rem;letter-spacing:.04em}
+    .your-clan .result-label{color:var(--blue-deep)}.enemy-clan .result-label{color:var(--red-deep)}
+    .summary-box,.roster-display,.analysis-box,.chart-box{border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(245,250,246,.75));border:1px solid var(--border)}
+    .summary-box,.roster-display{min-height:120px;padding:14px 16px;white-space:pre-wrap;word-wrap:break-word;font-family:"Courier New",monospace;font-size:.87rem;line-height:1.6}
+    .roster-display{min-height:200px;max-height:420px;overflow-y:auto}
+    .analysis-section{margin-top:28px;margin-bottom:12px}
+    .analysis-header{margin:0 0 14px;padding-bottom:10px;border-bottom:3px solid var(--green);color:var(--green-deep);font-size:clamp(1.4rem,2vw,2rem);letter-spacing:.04em}
+    .analysis-container{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:20px}
+    .analysis-side{display:flex;flex-direction:column;gap:16px}
+    .analysis-side-title{font-size:1.2rem;font-weight:800;padding:12px 14px;border-radius:12px;text-align:center}
+    .your-clan-side .analysis-side-title{background:linear-gradient(180deg,var(--blue-soft),#e8f2ff);color:var(--blue-deep);border:1px solid rgba(42,122,226,.4)}
+    .enemy-clan-side .analysis-side-title{background:linear-gradient(180deg,var(--red-soft),#ffe8e8);color:var(--red-deep);border:1px solid rgba(227,93,93,.4)}
+    .critical-values{background:rgba(255,255,255,.55);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-family:"Courier New",monospace;font-size:.85rem;line-height:1.6}
+    .critical-value-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0}
+    .critical-value-label{font-weight:700;color:var(--muted)}
+    .critical-value-number{font-weight:800;color:var(--red-deep);min-width:80px;text-align:right}
+    .chart-box{padding:16px;min-height:280px;position:relative;overflow:hidden}
+    .chart-svg{width:100%;height:100%}
+    .analysis-box{padding:14px 16px;min-height:100px;max-height:280px;overflow-y:auto;white-space:pre-wrap;word-wrap:break-word;font-family:"Courier New",monospace;font-size:.82rem;line-height:1.55}
+    .analysis-box.critical{border-left:6px solid var(--gold);background:linear-gradient(180deg,rgba(255,250,236,.8),rgba(255,248,235,.82))}
+    .analysis-box.viable{border-left:6px solid var(--green);background:linear-gradient(180deg,rgba(91,189,109,.08),rgba(91,189,109,.05))}
+    .analysis-box.non-viable{border-left:6px solid var(--red);background:linear-gradient(180deg,rgba(227,93,93,.08),rgba(227,93,93,.05))}
+    .analysis-title{font-size:.9rem;font-weight:800;margin-bottom:10px;letter-spacing:.05em}
+    .analysis-box.critical .analysis-title{color:#8d6000}.analysis-box.viable .analysis-title{color:var(--green-deep)}.analysis-box.non-viable .analysis-title{color:var(--red-deep)}
+
+    .attack-log-toggle-row{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:14px;
+      margin:8px 0 18px;
+    }
+    .toggle-log-btn{
+      appearance:none;
+      border:none;
+      border-radius:12px;
+      padding:12px 20px;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      font-size:.95rem;
+      box-shadow:0 4px 12px rgba(17,53,34,.12);
+      background:linear-gradient(180deg,#f5fff7,#d9f1df);
+      color:var(--green-ink);
+      border:1px solid var(--border);
+    }
+    .toggle-log-btn:hover{
+      transform:translateY(-2px);
+      filter:brightness(1.03);
+    }
+    .toggle-log-btn.active{
+      background:linear-gradient(180deg,var(--green),#72d77b);
+      color:#072b18;
+      border-color:rgba(16,53,37,.25);
+    }
+    .attack-log-panel{
+      display:none;
+      margin-top:12px;
+      background:rgba(255,255,255,.55);
+      border:1px solid var(--border);
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+    .attack-log-panel.visible{
+      display:block;
+    }
+    .attack-log-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
+    }
+    .attack-log-box{
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:linear-gradient(180deg,rgba(255,255,255,.82),rgba(242,250,246,.8));
+      padding:12px;
+    }
+    .attack-log-box h3{
+      margin:0 0 12px;
+      text-align:center;
+      font-size:1.05rem;
+      color:var(--green-deep);
+    }
+    .attack-log-table{
+      width:100%;
+      border-collapse:collapse;
+      font-family:"Courier New",monospace;
+      font-size:.82rem;
+    }
+    .attack-log-table th,
+    .attack-log-table td{
+      border:1px solid var(--border);
+      padding:8px 10px;
+      text-align:center;
+    }
+    .attack-log-table th{
+      background:rgba(91,189,109,.12);
+      color:var(--green-deep);
+      font-weight:800;
+    }
+    .attack-log-table tbody tr:nth-child(even){
+      background:rgba(255,255,255,.35);
+    }
+    .attack-log-table tbody tr:nth-child(odd){
+      background:rgba(248,252,249,.6);
+    }
+    .attack-log-summary{
+      margin-top:14px;
+      padding-top:10px;
+      border-top:1px solid rgba(29,90,61,.2);
+    }
+    .attack-log-summary h4{
+      margin:0 0 8px;
+      font-size:.92rem;
+      color:var(--green-deep);
+      letter-spacing:.04em;
+      text-align:center;
+    }
+    .attack-log-summary-box{
+      padding:10px 12px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:rgba(255,255,255,.6);
+      font-family:"Courier New",monospace;
+      font-size:.78rem;
+      line-height:1.6;
+      white-space:pre-wrap;
+      word-wrap:break-word;
+      color:var(--text);
+    }
+
+    @media (max-width:1200px){.analysis-container{grid-template-columns:1fr;gap:22px}}
+    @media (max-width:980px){.input-controls{grid-template-columns:1fr;gap:22px}.simulate-button-container button{width:100%}.attack-log-grid{grid-template-columns:1fr}}
+    @media (max-width:640px){body{padding:12px 10px 24px}.instructions,.panel,.summary-box,.roster-display,.analysis-box,.chart-box{border-radius:12px}.input-row{grid-template-columns:1fr;gap:8px}.input-row label{font-size:.8rem}.filter-buttons{gap:8px}.filter-btn{padding:9px 14px;font-size:.85rem}.simulate-button-container button{width:100%;padding:12px 24px;font-size:1rem}.simulate-section{display:flex;flex-direction:column;gap:12px}.simulate-button-container{width:100%}.status-display{width:100%;font-size:.85rem;min-height:45px}.summary-box,.roster-display,.analysis-box{font-size:.76rem}.analysis-container{grid-template-columns:1fr;gap:16px}}
   </style>
 </head>
 <body>
@@ -662,17 +196,18 @@
       <h2>📋 Instructions</h2>
       <p><strong>Enter each team power scores using one of two methods:</strong></p>
       <p>1️⃣ <strong>Direct Entry:</strong> Use the top row to enter comma-separated power values (e.g., "600t, 100t, 15t, 5t, 5t, 3t")</p>
-      <p>2️⃣ <strong>Count Entry:</strong> Toggle the power tier buttons to reveal count inputs for each tier</p>
-      <p>⚠️ <strong>Note:</strong> If the top row contains values, all other inputs are ignored. Non-exact values are automatically converted to the next lower tier.</p>
+      <p>2️⃣ <strong>Count Entry:</strong> Toggle the tier buttons to reveal count inputs for each tier</p>
+      <p>⚠️ <strong>Note:</strong> If the top row has values, all other inputs are ignored. Non-exact values are automatically converted to the next lower tier.</p>
+      <p>📝 <strong>Update log v1.1 - updated critical tier, updated simulated battle (added greater power simulation where same power is 50%, and same power simulation)</strong></p>
     </div>
 
     <div class="filter-wrap">
       <h3>⚙️ Power Tier Count Inputs</h3>
       <div class="filter-buttons">
-        <button class="filter-btn active" onclick="toggleTierSection('t', this)">Trillions (T)</button>
-        <button class="filter-btn active" onclick="toggleTierSection('b', this)">Billions (B)</button>
-        <button class="filter-btn active" onclick="toggleTierSection('m', this)">Millions (M)</button>
-        <button class="filter-btn active" onclick="toggleTierSection('k', this)">Thousands (K)</button>
+        <button class="filter-btn" onclick="toggleTierSection('t',this)">Trillions (T)</button>
+        <button class="filter-btn" onclick="toggleTierSection('b',this)">Billions (B)</button>
+        <button class="filter-btn" onclick="toggleTierSection('m',this)">Millions (M)</button>
+        <button class="filter-btn" onclick="toggleTierSection('k',this)">Thousands (K)</button>
       </div>
     </div>
 
@@ -680,10 +215,7 @@
       <div class="column your-clan">
         <div class="column-header">🏰 Your Clan</div>
         <div class="panel">
-          <div class="input-row">
-            <label>Direct Entry:</label>
-            <input type="text" id="yourClanDirect" class="first-row-input" placeholder="600t, 100t, 15t, 5t, 3t...">
-          </div>
+          <div class="input-row"><label>Direct Entry:</label><input type="text" id="yourClanDirect" class="first-row-input" placeholder="600t, 100t, 15t, 5t, 3t..."></div>
           <div id="yourClanInputs"></div>
         </div>
         <div id="yourClanWarning" class="warning-box"></div>
@@ -692,19 +224,14 @@
       <div class="column enemy-clan">
         <div class="column-header">⚔️ Enemy Clan</div>
         <div class="panel">
-          <div class="input-row">
-            <label>Direct Entry:</label>
-            <input type="text" id="enemyClanDirect" class="first-row-input" placeholder="600t, 100t, 15t, 5t, 3t...">
-          </div>
+          <div class="input-row"><label>Direct Entry:</label><input type="text" id="enemyClanDirect" class="first-row-input" placeholder="600t, 100t, 15t, 5t, 3t..."></div>
           <div id="enemyClanInputs"></div>
         </div>
         <div id="enemyClanWarning" class="warning-box"></div>
       </div>
 
       <div class="simulate-section">
-        <div class="simulate-button-container">
-          <button onclick="simulate()">⚡ SIMULATE ⚡</button>
-        </div>
+        <div class="simulate-button-container"><button onclick="simulate()">⚡ SIMULATE ⚡</button></div>
         <div class="status-display ready" id="statusDisplay">Ready to simulate...</div>
       </div>
     </div>
@@ -713,15 +240,12 @@
       <div class="column your-clan">
         <div class="result-label">📊 Team Summary</div>
         <div class="summary-box" id="yourClanSummary">Ready to simulate...</div>
-
         <div class="result-label">🎖️ Team Roster</div>
         <div class="roster-display" id="yourClanRoster">Roster will appear here...</div>
       </div>
-
       <div class="column enemy-clan">
         <div class="result-label">📊 Team Summary</div>
         <div class="summary-box" id="enemyClanSummary">Ready to simulate...</div>
-
         <div class="result-label">🎖️ Team Roster</div>
         <div class="roster-display" id="enemyClanRoster">Roster will appear here...</div>
       </div>
@@ -729,128 +253,186 @@
 
     <div class="analysis-section">
       <h2 class="analysis-header">📈 Strategic Analysis</h2>
-
       <div class="analysis-container">
         <div class="analysis-side your-clan-side">
           <div class="analysis-side-title">🏰 Your Clan Analysis</div>
-
           <div class="critical-values">
-            <div class="critical-value-row">
-              <div class="critical-value-label">Critical Group Size</div>
-              <div class="critical-value-number" id="yourCriticalGroupSize">-</div>
-            </div>
-            <div class="critical-value-row">
-              <div class="critical-value-label">Critical Attacker Power</div>
-              <div class="critical-value-number" id="yourCriticalAttackerPower">-</div>
-            </div>
-            <div class="critical-value-row">
-              <div class="critical-value-label">Enemy Spread</div>
-              <div class="critical-value-number" id="yourEnemySpread">-</div>
-            </div>
-            <div class="critical-value-row">
-              <div class="critical-value-label">Critical Target Tier</div>
-              <div class="critical-value-number" id="yourCriticalTargetTier">-</div>
-            </div>
+            <div class="critical-value-row"><div class="critical-value-label">Critical Group Size</div><div class="critical-value-number" id="yourCriticalGroupSize">-</div></div>
+            <div class="critical-value-row"><div class="critical-value-label">Critical Tier</div><div class="critical-value-number" id="yourCriticalTier">-</div></div>
+            <div class="critical-value-row"><div class="critical-value-label">Enemy Spread</div><div class="critical-value-number" id="yourEnemySpread">-</div></div>
           </div>
 
           <div class="result-label">Power Distribution (Cumulative Count)</div>
-          <div class="chart-box" id="yourChart">
-            <svg class="chart-svg" viewBox="0 0 800 250" preserveAspectRatio="xMidYMid meet"></svg>
-          </div>
+          <div class="chart-box" id="yourChart"><svg class="chart-svg" viewBox="0 0 800 250" preserveAspectRatio="xMidYMid meet"></svg></div>
 
           <div class="result-label">🔴 Critical Members (Leader Tier)</div>
-          <div class="analysis-box critical">
-            <div class="analysis-title">⭐ CRITICAL / LEADER</div>
-            <div id="yourCriticalMembers">Members to be determined...</div>
-          </div>
+          <div class="analysis-box critical"><div class="analysis-title">⭐ CRITICAL / LEADER</div><div id="yourCriticalMembers">Members to be determined...</div></div>
 
           <div class="result-label">🟢 Viable Members (Can Attack)</div>
-          <div class="analysis-box viable">
-            <div class="analysis-title">✅ VIABLE</div>
-            <div id="yourViableMembers">Members to be determined...</div>
-          </div>
+          <div class="analysis-box viable"><div class="analysis-title">✅ VIABLE</div><div id="yourViableMembers">Members to be determined...</div></div>
 
           <div class="result-label">🔵 Non-Viable Members</div>
-          <div class="analysis-box non-viable">
-            <div class="analysis-title">❌ NON-VIABLE</div>
-            <div id="yourNonViableMembers">Members to be determined...</div>
-          </div>
+          <div class="analysis-box non-viable"><div class="analysis-title">❌ NON-VIABLE</div><div id="yourNonViableMembers">Members to be determined...</div></div>
         </div>
 
         <div class="analysis-side enemy-clan-side">
           <div class="analysis-side-title">⚔️ Enemy Clan Analysis</div>
-
           <div class="critical-values">
-            <div class="critical-value-row">
-              <div class="critical-value-label">Critical Group Size</div>
-              <div class="critical-value-number" id="enemyCriticalGroupSize">-</div>
-            </div>
-            <div class="critical-value-row">
-              <div class="critical-value-label">Critical Attacker Power</div>
-              <div class="critical-value-number" id="enemyCriticalAttackerPower">-</div>
-            </div>
-            <div class="critical-value-row">
-              <div class="critical-value-label">Your Spread</div>
-              <div class="critical-value-number" id="enemyYourSpread">-</div>
-            </div>
-            <div class="critical-value-row">
-              <div class="critical-value-label">Critical Target Tier</div>
-              <div class="critical-value-number" id="enemyCriticalTargetTier">-</div>
-            </div>
+            <div class="critical-value-row"><div class="critical-value-label">Critical Group Size</div><div class="critical-value-number" id="enemyCriticalGroupSize">-</div></div>
+            <div class="critical-value-row"><div class="critical-value-label">Critical Tier</div><div class="critical-value-number" id="enemyCriticalTier">-</div></div>
+            <div class="critical-value-row"><div class="critical-value-label">Your Spread</div><div class="critical-value-number" id="enemyYourSpread">-</div></div>
           </div>
 
           <div class="result-label">Power Distribution (Cumulative Count)</div>
-          <div class="chart-box" id="enemyChart">
-            <svg class="chart-svg" viewBox="0 0 800 250" preserveAspectRatio="xMidYMid meet"></svg>
-          </div>
+          <div class="chart-box" id="enemyChart"><svg class="chart-svg" viewBox="0 0 800 250" preserveAspectRatio="xMidYMid meet"></svg></div>
 
           <div class="result-label">🔴 Critical Members (Leader Tier)</div>
-          <div class="analysis-box critical">
-            <div class="analysis-title">⭐ CRITICAL / LEADER</div>
-            <div id="enemyCriticalMembers">Members to be determined...</div>
-          </div>
+          <div class="analysis-box critical"><div class="analysis-title">⭐ CRITICAL / LEADER</div><div id="enemyCriticalMembers">Members to be determined...</div></div>
 
           <div class="result-label">🟢 Viable Members (Can Attack)</div>
-          <div class="analysis-box viable">
-            <div class="analysis-title">✅ VIABLE</div>
-            <div id="enemyViableMembers">Members to be determined...</div>
-          </div>
+          <div class="analysis-box viable"><div class="analysis-title">✅ VIABLE</div><div id="enemyViableMembers">Members to be determined...</div></div>
 
           <div class="result-label">🔵 Non-Viable Members</div>
-          <div class="analysis-box non-viable">
-            <div class="analysis-title">❌ NON-VIABLE</div>
-            <div id="enemyNonViableMembers">Members to be determined...</div>
+          <div class="analysis-box non-viable"><div class="analysis-title">❌ NON-VIABLE</div><div id="enemyNonViableMembers">Members to be determined...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="analysis-section">
+      <h2 class="analysis-header">⚡ Simulation Results (Greater Power Wins)</h2>
+      <div class="stats-container" style="display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:18px;">
+        <div class="stat-column your-clan-stat" style="display:flex;flex-direction:column;gap:12px;">
+          <div class="stat-column-title" style="font-weight:800;text-align:center;padding:8px 0;font-size:1.1rem;color:var(--blue-deep);">🏰 Your Clan</div>
+          <div class="stats-boxes" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="stat-box" style="text-align:center;padding:18px 16px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(245,250,246,.75));"><div class="stat-label" style="color:var(--muted);font-size:.9rem;margin-bottom:10px;font-weight:700;">Resets</div><div class="stat-value" id="yourSimResets" style="font-size:clamp(1.5rem,2.8vw,2.1rem);font-weight:800;font-family:'Courier New',monospace;color:var(--green-deep);">0</div></div>
+            <div class="stat-box" style="text-align:center;padding:18px 16px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(245,250,246,.75));"><div class="stat-label" style="color:var(--muted);font-size:.9rem;margin-bottom:10px;font-weight:700;">Score</div><div class="stat-value" id="yourSimScore" style="font-size:clamp(1.5rem,2.8vw,2.1rem);font-weight:800;font-family:'Courier New',monospace;color:var(--green-deep);">0</div></div>
+          </div>
+        </div>
+        <div class="stat-column enemy-clan-stat" style="display:flex;flex-direction:column;gap:12px;">
+          <div class="stat-column-title" style="font-weight:800;text-align:center;padding:8px 0;font-size:1.1rem;color:var(--red-deep);">⚔️ Enemy Clan</div>
+          <div class="stats-boxes" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="stat-box" style="text-align:center;padding:18px 16px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(245,250,246,.75));"><div class="stat-label" style="color:var(--muted);font-size:.9rem;margin-bottom:10px;font-weight:700;">Resets</div><div class="stat-value" id="enemySimResets" style="font-size:clamp(1.5rem,2.8vw,2.1rem);font-weight:800;font-family:'Courier New',monospace;color:var(--green-deep);">0</div></div>
+            <div class="stat-box" style="text-align:center;padding:18px 16px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(245,250,246,.75));"><div class="stat-label" style="color:var(--muted);font-size:.9rem;margin-bottom:10px;font-weight:700;">Score</div><div class="stat-value" id="enemySimScore" style="font-size:clamp(1.5rem,2.8vw,2.1rem);font-weight:800;font-family:'Courier New',monospace;color:var(--green-deep);">0</div></div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="analysis-section">
-      <h2 class="analysis-header">⚡ Simulation Results</h2>
-      <div class="stats-container">
-        <div class="stat-column your-clan-stat">
-          <div class="stat-column-title">🏰 Your Clan</div>
-          <div class="stats-boxes">
-            <div class="stat-box">
-              <div class="stat-label">Resets</div>
-              <div class="stat-value" id="yourSimResets">0</div>
+      <h2 class="analysis-header">🎯 Attack Sequence Visuals (Greater Power Wins)</h2>
+      <div class="analysis-container">
+        <div class="analysis-side your-clan-side">
+          <div class="analysis-side-title">🏰 Your Clan Attack Plot</div>
+          <div class="chart-box" id="yourAttackChart"><svg class="chart-svg" viewBox="0 0 800 260" preserveAspectRatio="xMidYMid meet"></svg></div>
+        </div>
+        <div class="analysis-side enemy-clan-side">
+          <div class="analysis-side-title">⚔️ Enemy Clan Attack Plot</div>
+          <div class="chart-box" id="enemyAttackChart"><svg class="chart-svg" viewBox="0 0 800 260" preserveAspectRatio="xMidYMid meet"></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="analysis-section">
+      <h2 class="analysis-header">⚡ Simulation Results (Same Power Wins)</h2>
+      <div class="stats-container" style="display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:18px;">
+        <div class="stat-column your-clan-stat" style="display:flex;flex-direction:column;gap:12px;">
+          <div class="stat-column-title" style="font-weight:800;text-align:center;padding:8px 0;font-size:1.1rem;color:var(--blue-deep);">🏰 Your Clan</div>
+          <div class="stats-boxes" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="stat-box" style="text-align:center;padding:18px 16px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(245,250,246,.75));"><div class="stat-label" style="color:var(--muted);font-size:.9rem;margin-bottom:10px;font-weight:700;">Resets</div><div class="stat-value" id="yourSimResets2" style="font-size:clamp(1.5rem,2.8vw,2.1rem);font-weight:800;font-family:'Courier New',monospace;color:var(--green-deep);">0</div></div>
+            <div class="stat-box" style="text-align:center;padding:18px 16px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(245,250,246,.75));"><div class="stat-label" style="color:var(--muted);font-size:.9rem;margin-bottom:10px;font-weight:700;">Score</div><div class="stat-value" id="yourSimScore2" style="font-size:clamp(1.5rem,2.8vw,2.1rem);font-weight:800;font-family:'Courier New',monospace;color:var(--green-deep);">0</div></div>
+          </div>
+        </div>
+        <div class="stat-column enemy-clan-stat" style="display:flex;flex-direction:column;gap:12px;">
+          <div class="stat-column-title" style="font-weight:800;text-align:center;padding:8px 0;font-size:1.1rem;color:var(--red-deep);">⚔️ Enemy Clan</div>
+          <div class="stats-boxes" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="stat-box" style="text-align:center;padding:18px 16px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(245,250,246,.75));"><div class="stat-label" style="color:var(--muted);font-size:.9rem;margin-bottom:10px;font-weight:700;">Resets</div><div class="stat-value" id="enemySimResets2" style="font-size:clamp(1.5rem,2.8vw,2.1rem);font-weight:800;font-family:'Courier New',monospace;color:var(--green-deep);">0</div></div>
+            <div class="stat-box" style="text-align:center;padding:18px 16px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(245,250,246,.75));"><div class="stat-label" style="color:var(--muted);font-size:.9rem;margin-bottom:10px;font-weight:700;">Score</div><div class="stat-value" id="enemySimScore2" style="font-size:clamp(1.5rem,2.8vw,2.1rem);font-weight:800;font-family:'Courier New',monospace;color:var(--green-deep);">0</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="analysis-section">
+      <h2 class="analysis-header">🎯 Attack Sequence Visuals (Same Power Wins)</h2>
+      <div class="analysis-container">
+        <div class="analysis-side your-clan-side">
+          <div class="analysis-side-title">🏰 Your Clan Attack Plot</div>
+          <div class="chart-box" id="samePowerYourAttackChart"><svg class="chart-svg" viewBox="0 0 800 260" preserveAspectRatio="xMidYMid meet"></svg></div>
+        </div>
+        <div class="analysis-side enemy-clan-side">
+          <div class="analysis-side-title">⚔️ Enemy Clan Attack Plot</div>
+          <div class="chart-box" id="samePowerEnemyAttackChart"><svg class="chart-svg" viewBox="0 0 800 260" preserveAspectRatio="xMidYMid meet"></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="analysis-section">
+      <h2 class="analysis-header">🧾 Attack Logs</h2>
+
+      <div class="attack-log-toggle-row">
+        <button class="toggle-log-btn" data-target="greaterAttackLogPanel">Attack Log (Greater Power Win)</button>
+        <button class="toggle-log-btn" data-target="sameAttackLogPanel">Attack Log (Same Power Win)</button>
+      </div>
+
+      <div id="greaterAttackLogPanel" class="attack-log-panel">
+        <div class="attack-log-grid">
+          <div class="attack-log-box">
+            <h3>🏰 Your Clan</h3>
+            <table class="attack-log-table">
+              <thead>
+                <tr><th>#</th><th>Attacker</th><th>Defender</th><th>Result</th></tr>
+              </thead>
+              <tbody id="yourGreaterAttackLogBody"><tr><td colspan="4">No attack data</td></tr></tbody>
+            </table>
+            <div class="attack-log-summary">
+              <h4>Roster Summary</h4>
+              <div id="yourGreaterAttackLogSummary" class="attack-log-summary-box">No roster summary</div>
             </div>
-            <div class="stat-box">
-              <div class="stat-label">Score</div>
-              <div class="stat-value" id="yourSimScore">0</div>
+          </div>
+
+          <div class="attack-log-box">
+            <h3>⚔️ Enemy Clan</h3>
+            <table class="attack-log-table">
+              <thead>
+                <tr><th>#</th><th>Attacker</th><th>Defender</th><th>Result</th></tr>
+              </thead>
+              <tbody id="enemyGreaterAttackLogBody"><tr><td colspan="4">No attack data</td></tr></tbody>
+            </table>
+            <div class="attack-log-summary">
+              <h4>Roster Summary</h4>
+              <div id="enemyGreaterAttackLogSummary" class="attack-log-summary-box">No roster summary</div>
             </div>
           </div>
         </div>
-        <div class="stat-column enemy-clan-stat">
-          <div class="stat-column-title">⚔️ Enemy Clan</div>
-          <div class="stats-boxes">
-            <div class="stat-box">
-              <div class="stat-label">Resets</div>
-              <div class="stat-value" id="enemySimResets">0</div>
+      </div>
+
+      <div id="sameAttackLogPanel" class="attack-log-panel">
+        <div class="attack-log-grid">
+          <div class="attack-log-box">
+            <h3>🏰 Your Clan</h3>
+            <table class="attack-log-table">
+              <thead>
+                <tr><th>#</th><th>Attacker</th><th>Defender</th><th>Result</th></tr>
+              </thead>
+              <tbody id="yourSameAttackLogBody"><tr><td colspan="4">No attack data</td></tr></tbody>
+            </table>
+            <div class="attack-log-summary">
+              <h4>Roster Summary</h4>
+              <div id="yourSameAttackLogSummary" class="attack-log-summary-box">No roster summary</div>
             </div>
-            <div class="stat-box">
-              <div class="stat-label">Score</div>
-              <div class="stat-value" id="enemySimScore">0</div>
+          </div>
+
+          <div class="attack-log-box">
+            <h3>⚔️ Enemy Clan</h3>
+            <table class="attack-log-table">
+              <thead>
+                <tr><th>#</th><th>Attacker</th><th>Defender</th><th>Result</th></tr>
+              </thead>
+              <tbody id="enemySameAttackLogBody"><tr><td colspan="4">No attack data</td></tr></tbody>
+            </table>
+            <div class="attack-log-summary">
+              <h4>Roster Summary</h4>
+              <div id="enemySameAttackLogSummary" class="attack-log-summary-box">No roster summary</div>
             </div>
           </div>
         </div>
@@ -862,724 +444,989 @@
     const $ = id => document.getElementById(id);
 
     const powerTiers = [
-      { name: '2q', value: 2e15, type: 't' },
-      { name: '1q', value: 1e15, type: 't' },
-      { name: '500t', value: 500e12, type: 't' },
-      { name: '200t', value: 200e12, type: 't' },
-      { name: '100t', value: 100e12, type: 't' },
-      { name: '50t', value: 50e12, type: 't' },
-      { name: '20t', value: 20e12, type: 't' },
-      { name: '10t', value: 10e12, type: 't' },
-      { name: '5t', value: 5e12, type: 't' },
-      { name: '2t', value: 2e12, type: 't' },
-      { name: '1t', value: 1e12, type: 't' },
-      { name: '500b', value: 500e9, type: 'b' },
-      { name: '200b', value: 200e9, type: 'b' },
-      { name: '100b', value: 100e9, type: 'b' },
-      { name: '50b', value: 50e9, type: 'b' },
-      { name: '20b', value: 20e9, type: 'b' },
-      { name: '10b', value: 10e9, type: 'b' },
-      { name: '5b', value: 5e9, type: 'b' },
-      { name: '2b', value: 2e9, type: 'b' },
-      { name: '1b', value: 1e9, type: 'b' },
-      { name: '500m', value: 500e6, type: 'm' },
-      { name: '200m', value: 200e6, type: 'm' },
-      { name: '100m', value: 100e6, type: 'm' },
-      { name: '50m', value: 50e6, type: 'm' },
-      { name: '20m', value: 20e6, type: 'm' },
-      { name: '10m', value: 10e6, type: 'm' },
-      { name: '5m', value: 5e6, type: 'm' },
-      { name: '2m', value: 2e6, type: 'm' },
-      { name: '1m', value: 1e6, type: 'm' },
-      { name: '500k', value: 500e3, type: 'k' },
-      { name: '200k', value: 200e3, type: 'k' },
-      { name: '100k', value: 100e3, type: 'k' },
-      { name: '50k', value: 50e3, type: 'k' },
-      { name: '20k', value: 20e3, type: 'k' },
-      { name: '10k', value: 10e3, type: 'k' }
+      {name:'2q',value:2e15,type:'t'},
+      {name:'1q',value:1e15,type:'t'},
+      {name:'500t',value:500e12,type:'t'},
+      {name:'200t',value:200e12,type:'t'},
+      {name:'100t',value:100e12,type:'t'},
+      {name:'50t',value:50e12,type:'t'},
+      {name:'20t',value:20e12,type:'t'},
+      {name:'10t',value:10e12,type:'t'},
+      {name:'5t',value:5e12,type:'t'},
+      {name:'2t',value:2e12,type:'t'},
+      {name:'1t',value:1e12,type:'t'},
+      {name:'500b',value:500e9,type:'b'},
+      {name:'200b',value:200e9,type:'b'},
+      {name:'100b',value:100e9,type:'b'},
+      {name:'50b',value:50e9,type:'b'},
+      {name:'20b',value:20e9,type:'b'},
+      {name:'10b',value:10e9,type:'b'},
+      {name:'5b',value:5e9,type:'b'},
+      {name:'2b',value:2e9,type:'b'},
+      {name:'1b',value:1e9,type:'b'},
+      {name:'500m',value:500e6,type:'m'},
+      {name:'200m',value:200e6,type:'m'},
+      {name:'100m',value:100e6,type:'m'},
+      {name:'50m',value:50e6,type:'m'},
+      {name:'20m',value:20e6,type:'m'},
+      {name:'10m',value:10e6,type:'m'},
+      {name:'5m',value:5e6,type:'m'},
+      {name:'2m',value:2e6,type:'m'},
+      {name:'1m',value:1e6,type:'m'},
+      {name:'500k',value:500e3,type:'k'},
+      {name:'200k',value:200e3,type:'k'},
+      {name:'100k',value:100e3,type:'k'},
+      {name:'50k',value:50e3,type:'k'},
+      {name:'20k',value:20e3,type:'k'},
+      {name:'10k',value:10e3,type:'k'}
     ];
 
-    const tierVisibility = { t: false, b: false, m: false, k: false };
+    const tierVisibility={t:false,b:false,m:false,k:false};
 
-    function updateStatus(message, type = 'ready') {
-      const status = $('statusDisplay');
-      status.textContent = message;
-      status.className = 'status-display ' + type;
+    function updateStatus(msg,type='ready'){
+      const s=$('statusDisplay');
+      s.textContent=msg;
+      s.className='status-display '+type;
     }
 
-    function initializeInputs() {
-      const container1 = $('yourClanInputs');
-      const container2 = $('enemyClanInputs');
-
-      let html = '<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(29,90,61,0.2);">';
-
-      powerTiers.forEach(tier => {
-        html += `<div class="tier-section tier-${tier.type}">
+    function initializeInputs(){
+      const c1=$('yourClanInputs'), c2=$('enemyClanInputs');
+      let html='<div style="margin-top:15px;padding-top:15px;border-top:1px solid rgba(29,90,61,.2);">';
+      powerTiers.forEach(tier=>{
+        html += `<div class="tier-section tier-${tier.type} ${tierVisibility[tier.type] ? 'visible' : ''}">
           <div class="input-row">
             <label><span class="power-label">${tier.name}</span></label>
-            <input type="number" id="yourClan${tier.name.replace(/[a-z]/gi, c => c)}" min="0" max="50" placeholder="0">
+            <input type="number" id="yourClan${tier.name.replace(/[a-z]/gi,c=>c)}" min="0" max="50" placeholder="0">
           </div>
         </div>`;
       });
-
-      html += '</div>';
-      container1.innerHTML = html;
-      container2.innerHTML = html.replace(/yourClan/g, 'enemyClan');
+      html+='</div>';
+      c1.innerHTML=html;
+      c2.innerHTML=html.replace(/yourClan/g,'enemyClan');
     }
 
-    function toggleTierSection(tierType, button) {
-      tierVisibility[tierType] = !tierVisibility[tierType];
+    function toggleTierSection(tierType,button){
+      tierVisibility[tierType]=!tierVisibility[tierType];
       button.classList.toggle('active');
-
-      const sections = document.querySelectorAll(`.tier-${tierType}`);
-      sections.forEach(section => section.classList.toggle('visible'));
+      document.querySelectorAll(`.tier-${tierType}`).forEach(s=>s.classList.toggle('visible'));
     }
 
-    function findClosestTierLower(value) {
-      let closestTier = powerTiers[powerTiers.length - 1];
+    function findClosestTierLower(value){
+      for(const t of powerTiers){
+        if(value >= t.value) return t;
+      }
+      return powerTiers[powerTiers.length-1];
+    }
 
-      for (let tier of powerTiers) {
-        if (value >= tier.value) {
-          closestTier = tier;
-          break;
+    function parsePowerEntry(entry){
+      const s=entry.trim().toLowerCase().replace(/\s+/g,'');
+      if(!s) return null;
+      const exact=powerTiers.find(t=>t.name.toLowerCase()===s);
+      if(exact) return exact.value;
+      const match=/^([0-9]+(?:\.[0-9]+)?)([qtbmk])?$/.exec(s);
+      if(!match) return null;
+      const v=parseFloat(match[1]), suffix=match[2]||'';
+      const mult={q:1e15,t:1e12,b:1e9,m:1e6,k:1e3};
+      const num=v*(mult[suffix]||1);
+      return Number.isFinite(num)&&num>0?num:null;
+    }
+
+    function parseDirectInput(input){
+      if(!input.trim()) return [];
+      const roster=[];
+      for(const entry of input.split(',').map(e=>e.trim()).filter(Boolean)){
+        const value=parsePowerEntry(entry);
+        if(value!==null){
+          const tier=findClosestTierLower(value);
+          roster.push({tier:tier.name,value:tier.value});
         }
       }
-
-      return closestTier;
-    }
-
-    function parsePowerEntry(entry) {
-      const trimmed = entry.trim().toLowerCase().replace(/\s+/g, '');
-      if (!trimmed) return null;
-
-      const exactTier = powerTiers.find(tier => tier.name.toLowerCase() === trimmed);
-      if (exactTier) return exactTier.value;
-
-      const match = /^([0-9]+(?:\.[0-9]+)?)([qtbmk])?$/.exec(trimmed);
-      if (!match) return null;
-
-      const value = parseFloat(match[1]);
-      const suffix = match[2] || '';
-      const multipliers = { q: 1e15, t: 1e12, b: 1e9, m: 1e6, k: 1e3 };
-      const numericValue = value * (multipliers[suffix] || 1);
-
-      return Number.isFinite(numericValue) && numericValue > 0 ? numericValue : null;
-    }
-
-    function parseDirectInput(input) {
-      if (!input.trim()) return [];
-
-      const entries = input.split(',').map(e => e.trim()).filter(e => e.length > 0);
-      const roster = [];
-
-      for (let entry of entries) {
-        const numericValue = parsePowerEntry(entry);
-        if (numericValue !== null) {
-          const matchedTier = findClosestTierLower(numericValue);
-          roster.push({ tier: matchedTier.name, value: matchedTier.value });
-        }
-      }
-
       return roster;
     }
 
-    function getCountInputs(clanPrefix) {
-      const counts = [];
-      for (let tier of powerTiers) {
-        const inputId = clanPrefix + tier.name.replace(/[a-z]/gi, c => c);
-        const input = $(inputId);
-        if (input) {
-          const count = parseInt(input.value) || 0;
-          if (count > 0) {
-            for (let i = 0; i < count; i++) {
-              counts.push({ tier: tier.name, value: tier.value });
-            }
-          }
+    function getCountInputs(prefix){
+      const out=[];
+      for(const tier of powerTiers){
+        const id=prefix+tier.name.replace(/[a-z]/gi,c=>c);
+        const input=$(id);
+        if(input){
+          const count=parseInt(input.value)||0;
+          for(let i=0;i<count;i++) out.push({tier:tier.name,value:tier.value});
         }
       }
-      return counts;
+      return out;
     }
 
-    function parseTeam(clan) {
-      const prefix = clan === 'your' ? 'yourClan' : 'enemyClan';
-      const directInput = $(prefix + 'Direct').value.trim();
-
-      if (directInput) {
-        return parseDirectInput(directInput);
-      }
-      return getCountInputs(prefix);
+    function parseTeam(clan){
+      const prefix=clan==='your'?'yourClan':'enemyClan';
+      const direct=$(prefix+'Direct').value.trim();
+      return direct ? parseDirectInput(direct) : getCountInputs(prefix);
     }
 
-    function sortAndValidate(roster) {
-      const sorted = roster.sort((a, b) => b.value - a.value);
-
-      if (sorted.length > 50) {
-        return { roster: sorted.slice(0, 50), warning: `⚠️ Team exceeds 50 unit limit! Truncated from ${sorted.length} to 50 units.` };
-      }
-
-      return { roster: sorted, warning: null };
+    function sortAndValidate(roster){
+      const sorted=roster.slice().sort((a,b)=>b.value-a.value);
+      if(sorted.length>50) return {roster:sorted.slice(0,50),warning:`⚠️ Team exceeds 50 unit limit! Truncated from ${sorted.length} to 50 units.`};
+      return {roster:sorted,warning:null};
     }
 
-    function assignScores(roster) {
-      return roster.map((unit, idx) => ({ ...unit, score: 50 - idx, index: idx }));
+    function assignScores(roster){
+      return roster.map((u,i)=>({...u,score:50-i,index:i}));
     }
 
-    function getDefenderCount(memberCount) {
-      if (memberCount <= 10) return Math.min(memberCount, 5);
-      return memberCount - 5;
+    function getDefenderCount(memberCount){
+      return memberCount <= 10 ? Math.min(memberCount,5) : memberCount - 5;
     }
 
-    function formatLargeNumber(num) {
-      if (num >= 1e15) return (num / 1e15).toFixed(1) + 'q';
-      if (num >= 1e12) return (num / 1e12).toFixed(1) + 't';
-      if (num >= 1e9) return (num / 1e9).toFixed(1) + 'b';
-      if (num >= 1e6) return (num / 1e6).toFixed(1) + 'm';
-      if (num >= 1e3) return (num / 1e3).toFixed(1) + 'k';
+    function formatLargeNumber(num){
+      if(num>=1e15) return (num/1e15).toFixed(1)+'q';
+      if(num>=1e12) return (num/1e12).toFixed(1)+'t';
+      if(num>=1e9) return (num/1e9).toFixed(1)+'b';
+      if(num>=1e6) return (num/1e6).toFixed(1)+'m';
+      if(num>=1e3) return (num/1e3).toFixed(1)+'k';
       return num.toFixed(0);
     }
 
-    function getSummary(roster) {
-      if (roster.length === 0) return 'No units';
-
-      const totalPower = roster.reduce((sum, u) => sum + u.value, 0);
-      const avgPower = totalPower / roster.length;
-      const topTier = roster[0].tier;
-      const unitCount = roster.length;
-
-      let summary = `Total Units: ${unitCount}\n`;
-      summary += `Top Tier: ${topTier}\n`;
-      summary += `Total Power: ${formatLargeNumber(totalPower)}\n`;
-      summary += `Avg Power: ${formatLargeNumber(avgPower)}\n`;
-
-      return summary;
+    function getSummary(roster){
+      if(!roster.length) return 'No units';
+      const total=roster.reduce((s,u)=>s+u.value,0), avg=total/roster.length;
+      return `Total Units: ${roster.length}\nTop Tier: ${roster[0].tier}\nTotal Power: ${formatLargeNumber(total)}\nAvg Power: ${formatLargeNumber(avg)}`;
     }
 
-    function formatRoster(roster) {
-      if (roster.length === 0) return 'No units in roster';
-
-      const grouped = {};
-      for (let unit of roster) {
-        if (!grouped[unit.tier]) grouped[unit.tier] = 0;
-        grouped[unit.tier]++;
-      }
-
-      let output = '';
-      let unitNum = 1;
-      for (let tier of powerTiers) {
-        if (grouped[tier.name]) {
-          const count = grouped[tier.name];
-          output += `${unitNum}. [${tier.name}] x${count}\n`;
-          unitNum += count;
+    function formatRoster(roster){
+      if(!roster.length) return 'No units in roster';
+      const grouped={};
+      for(const unit of roster) grouped[unit.tier]=(grouped[unit.tier]||0)+1;
+      let out='', idx=1;
+      for(const tier of powerTiers){
+        if(grouped[tier.name]){
+          out += `${idx}. [${tier.name}] x${grouped[tier.name]}\n`;
+          idx += grouped[tier.name];
         }
       }
-
-      return output;
+      return out.trimEnd();
     }
 
-    function getMedianPower(roster) {
-      if (roster.length === 0) return 0;
-      const sorted = [...roster].sort((a, b) => a.value - b.value);
-      const mid = Math.floor(sorted.length / 2);
-      return sorted.length % 2 === 0 ? (sorted[mid - 1].value + sorted[mid].value) / 2 : sorted[mid].value;
-    }
-
-    function getTierForValue(value) {
-      for (let tier of powerTiers) {
-        if (tier.value <= value) return tier.name;
-      }
-      return powerTiers[powerTiers.length - 1].name;
-    }
-
-    function buildCumulativeData(roster, minValue, maxValue) {
-      const data = [];
-
-      for (let tier of powerTiers) {
-        const tierValue = tier.value;
-        if (tierValue >= minValue && tierValue <= maxValue) {
-          const count = roster.filter(member => member.value >= tierValue).length;
-          data.push({ tier: tier.name, value: tierValue, count, cumulative: count });
+    function buildCumulativeData(roster,minValue,maxValue){
+      const data=[];
+      for(const tier of powerTiers){
+        const v=tier.value;
+        if(v >= minValue && v <= maxValue){
+          const count=roster.filter(m => m.value >= v).length;
+          data.push({tier:tier.name,value:v,count,cumulative:count});
         }
       }
-
       return data;
     }
 
-    function analyzeMembers(roster, defenderRoster) {
-      if (roster.length === 0) {
-        return {
-          critical: [],
-          viable: [],
-          nonViable: [],
-          criticalGroupSize: 0,
-          criticalAttackerPower: '-',
-          defenderSpread: 0,
-          criticalTargetTier: '-'
-        };
-      }
+function getCriticalPlotIndices(attackerRoster, defenderRoster){
+  const defenders = defenderRoster.slice(-getDefenderCount(defenderRoster.length));
+  if (!attackerRoster.length || !defenders.length) return { yellow: null, green: null };
 
-      const defenderCount = defenderRoster.length;
-      const defenderSize = getDefenderCount(defenderCount);
-      const defenders = defenderRoster.slice(-defenderSize);
+  const minValue = Math.min(...attackerRoster.map(m => m.value), ...defenders.map(d => d.value));
+  const maxValue = Math.max(...attackerRoster.map(m => m.value), ...defenders.map(d => d.value));
+  const attackerData = buildCumulativeData(attackerRoster, minValue, maxValue);
+  const defenderData = buildCumulativeData(defenders, minValue, maxValue);
 
-      if (defenders.length === 0) {
-        return {
-          critical: [],
-          viable: [],
-          nonViable: roster,
-          criticalGroupSize: 0,
-          criticalAttackerPower: '-',
-          defenderSpread: 0,
-          criticalTargetTier: '-'
-        };
-      }
+  let yellow = null;
+  for (let i = 0; i < attackerData.length; i++) {
+    const attackerCount = attackerData[i].cumulative;
+    const defenderCount = defenderData[i]?.cumulative ?? 0;
+    if (attackerCount <= defenderCount) {
+      yellow = i;
+      break;
+    }
+  }
 
-      const weakestDefender = defenders[defenders.length - 1].value;
+  let green = null;
+  for (let i = 0; i < attackerData.length; i++) {
+    const attackerCount = attackerData[i].cumulative;
+    const defenderCount = defenderData[i]?.cumulative ?? 0;
+    if (attackerCount <= defenderCount + 1) {
+      green = i;
+      break;
+    }
+  }
 
-      const nonViable = roster.filter(member => member.value <= weakestDefender);
+  return { yellow, green };
+}
 
-      const minValue = Math.min(
-        Math.min(...roster.map(m => m.value)),
-        Math.min(...defenders.map(d => d.value))
-      );
-      const maxValue = Math.max(
-        Math.max(...roster.map(m => m.value)),
-        Math.max(...defenders.map(d => d.value))
-      );
+function getSelectedCriticalIndex(attackerRoster, defenderRoster){
+  const { yellow, green } = getCriticalPlotIndices(attackerRoster, defenderRoster);
 
-      const rosterData = buildCumulativeData(roster, minValue, maxValue);
-      const defenderData = buildCumulativeData(defenders, minValue, maxValue);
+  if (yellow === null && green === null) return null;
+  if (yellow === null) return green;
+  if (green === null) return yellow;
 
-      let criticalTierValue = null;
-      let criticalPowerTier = null;
+  if (green - yellow >= 1) return yellow;
 
-      for (let i = 0; i < rosterData.length; i++) {
-        const rosterCum = rosterData[i].cumulative;
-        const defenderCum = i < defenderData.length ? defenderData[i].cumulative : 0;
+  if (green < yellow) {
+    return Math.floor((green + yellow) / 2);
+  }
 
-        if (rosterCum < defenderCum) {
-          criticalTierValue = rosterData[i].value;
-          criticalPowerTier = rosterData[i].tier;
-          break;
-        }
-      }
+  return yellow;
+}
 
-      if (criticalTierValue === null) {
-        criticalTierValue = roster[roster.length - 1].value;
-        criticalPowerTier = roster[roster.length - 1].tier;
-      }
+function findCriticalTier(attackerRoster, defenderRoster){
+  if (!attackerRoster.length) return { value: 0, tier: '-' };
 
-      const critical = roster.filter(member => member.value > criticalTierValue);
+  const defenders = defenderRoster.slice(-getDefenderCount(defenderRoster.length));
+  if (!defenders.length) return { value: attackerRoster[0].value, tier: attackerRoster[0].tier };
 
-      const viable = roster.filter(
-        member => member.value > weakestDefender && member.value <= criticalTierValue
-      );
+  const minValue = Math.min(...attackerRoster.map(m => m.value), ...defenders.map(d => d.value));
+  const maxValue = Math.max(...attackerRoster.map(m => m.value), ...defenders.map(d => d.value));
+  const attackerData = buildCumulativeData(attackerRoster, minValue, maxValue);
 
-      return {
-        critical,
-        viable,
-        nonViable,
-        criticalGroupSize: critical.length,
-        criticalAttackerPower: criticalPowerTier ? formatLargeNumber(criticalTierValue) : '-',
-        defenderSpread: defenderSize,
-        criticalTargetTier: criticalPowerTier
-      };
+  const selectedIndex = getSelectedCriticalIndex(attackerRoster, defenderRoster);
+  if (selectedIndex === null) return { value: attackerRoster[0].value, tier: attackerRoster[0].tier };
+
+  const selected = attackerData[selectedIndex];
+  if (!selected) return { value: attackerRoster[0].value, tier: attackerRoster[0].tier };
+
+  return { value: selected.value, tier: selected.tier };
+}
+
+    function analyzeMembers(roster, defenderRoster){
+      if(!roster.length) return {critical:[],viable:[],nonViable:[],criticalGroupSize:0,criticalTier:'-',enemySpread:0};
+
+      const defenderSpread=getDefenderCount(defenderRoster.length);
+      const defenders=defenderRoster.slice(-defenderSpread);
+      if(!defenders.length) return {critical:[],viable:[],nonViable:roster,criticalGroupSize:0,criticalTier:'-',enemySpread:0};
+
+      const weakestDefender=defenders[defenders.length-1].value;
+      const criticalInfo=findCriticalTier(roster,defenderRoster);
+      const critical=roster.filter(m=>m.value >= criticalInfo.value);
+      const viable=roster.filter(m=>m.value > weakestDefender && m.value < criticalInfo.value);
+      const nonViable=roster.filter(m=>m.value <= weakestDefender);
+
+      return {critical,viable,nonViable,criticalGroupSize:critical.length,criticalTier:criticalInfo.tier,enemySpread:defenderSpread};
     }
 
-    function formatAnalysis(members) {
-      if (members.length === 0) return 'None';
-
-      let output = '';
-      for (let i = 0; i < members.length; i++) {
-        output += `${i + 1}. ${members[i].tier} (Score: ${members[i].score})\n`;
-      }
-      return output;
+    function formatAnalysis(members){
+      if(!members.length) return 'None';
+      let out='';
+      for(let i=0;i<members.length;i++) out += `${i+1}. ${members[i].tier} (Score: ${members[i].score})\n`;
+      return out.trimEnd();
     }
 
-    function createLineChart(yourRoster, defenderRoster, containerId, isYourClan) {
-      const svg = $(containerId).querySelector('svg');
-      svg.innerHTML = '';
+function createLineChart(attackerRoster, defenderRoster, containerId, isYourClan){
+  const svg = $(containerId).querySelector('svg');
+  svg.innerHTML = '';
 
-      if (yourRoster.length === 0 || defenderRoster.length === 0) {
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', '400');
-        text.setAttribute('y', '125');
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('fill', '#999');
-        text.setAttribute('font-size', '14');
-        text.textContent = 'No data';
-        svg.appendChild(text);
+  if (!attackerRoster.length || !defenderRoster.length) {
+    const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    t.setAttribute('x', '400');
+    t.setAttribute('y', '125');
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('fill', '#999');
+    t.setAttribute('font-size', '14');
+    t.textContent = 'No data';
+    svg.appendChild(t);
+    return;
+  }
+
+  const defenderSpread = getDefenderCount(defenderRoster.length);
+  const defenders = defenderRoster.slice(-defenderSpread);
+  const minValue = Math.min(...attackerRoster.map(m => m.value), ...defenders.map(d => d.value));
+  const maxValue = Math.max(...attackerRoster.map(m => m.value), ...defenders.map(d => d.value));
+  const attackerData = buildCumulativeData(attackerRoster, minValue, maxValue);
+  const defenderData = buildCumulativeData(defenders, minValue, maxValue);
+
+  const margin = { top: 20, right: 20, bottom: 40, left: 60 };
+  const width = 800 - margin.left - margin.right;
+  const height = 250 - margin.top - margin.bottom;
+
+  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  g.setAttribute('transform', `translate(${margin.left},${margin.top})`);
+  svg.appendChild(g);
+
+  const maxCumulative = Math.max(
+    Math.max(...attackerData.map(d => d.cumulative), 1),
+    Math.max(...defenderData.map(d => d.cumulative), 1)
+  );
+  const xScale = width / Math.max(Math.max(attackerData.length, defenderData.length) - 1, 1);
+  const yScale = height / maxCumulative;
+
+  const aColor = isYourClan ? '#2a7ae2' : '#e35d5d';
+  const dColor = isYourClan ? '#e35d5d' : '#2a7ae2';
+  const green = '#2dbf61';
+
+  const labels = ['2q', '1q', '1t', '1b', '1m', '1k'];
+  const idxs = [];
+  for (const label of labels) {
+    const idx = attackerData.findIndex(d => d.tier === label);
+    if (idx >= 0) idxs.push(idx);
+  }
+
+  for (let i = 0; i <= 5; i++) {
+    const yVal = maxCumulative * (i / 5);
+    const y = height - yVal * yScale;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', '0');
+    line.setAttribute('y1', y);
+    line.setAttribute('x2', width);
+    line.setAttribute('y2', y);
+    line.setAttribute('stroke', '#e0e0e0');
+    line.setAttribute('stroke-width', '1');
+    line.setAttribute('opacity', '.5');
+    g.appendChild(line);
+
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', '-8');
+    label.setAttribute('y', y + 4);
+    label.setAttribute('text-anchor', 'end');
+    label.setAttribute('font-size', '11');
+    label.setAttribute('fill', '#666');
+    label.setAttribute('font-weight', '600');
+    label.textContent = Math.round(yVal);
+    g.appendChild(label);
+  }
+
+  for (let i = 0; i < idxs.length; i++) {
+    const idx = idxs[i];
+    const x = idx * xScale;
+    const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    tick.setAttribute('x1', x);
+    tick.setAttribute('y1', height);
+    tick.setAttribute('x2', x);
+    tick.setAttribute('y2', height + 6);
+    tick.setAttribute('stroke', '#666');
+    tick.setAttribute('stroke-width', '1');
+    g.appendChild(tick);
+
+    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    txt.setAttribute('x', x);
+    txt.setAttribute('y', height + 20);
+    txt.setAttribute('text-anchor', 'middle');
+    txt.setAttribute('font-size', '11');
+    txt.setAttribute('fill', '#666');
+    txt.setAttribute('font-weight', '600');
+    txt.textContent = labels[i];
+    g.appendChild(txt);
+  }
+
+  let aPath = '', dPath = '', gPath = '';
+  for (let i = 0; i < attackerData.length; i++) {
+    const x = i * xScale;
+    const y = height - attackerData[i].cumulative * yScale;
+    aPath += (i === 0 ? 'M' : 'L') + ` ${x} ${y}`;
+  }
+  for (let i = 0; i < defenderData.length; i++) {
+    const x = i * xScale;
+    const y = height - defenderData[i].cumulative * yScale;
+    dPath += (i === 0 ? 'M' : 'L') + ` ${x} ${y}`;
+  }
+  for (let i = 0; i < attackerData.length; i++) {
+    const x = (i + 1) * xScale;
+    const y = height - attackerData[i].cumulative * yScale;
+    gPath += (i === 0 ? 'M' : 'L') + ` ${x} ${y}`;
+  }
+
+  const aLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  aLine.setAttribute('d', aPath);
+  aLine.setAttribute('fill', 'none');
+  aLine.setAttribute('stroke', aColor);
+  aLine.setAttribute('stroke-width', '2.5');
+  aLine.setAttribute('stroke-linecap', 'round');
+  aLine.setAttribute('stroke-linejoin', 'round');
+  g.appendChild(aLine);
+
+  const dLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  dLine.setAttribute('d', dPath);
+  dLine.setAttribute('fill', 'none');
+  dLine.setAttribute('stroke', dColor);
+  dLine.setAttribute('stroke-width', '2.5');
+  dLine.setAttribute('stroke-linecap', 'round');
+  dLine.setAttribute('stroke-linejoin', 'round');
+  dLine.setAttribute('stroke-dasharray', '5,5');
+  g.appendChild(dLine);
+
+  const gLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  gLine.setAttribute('d', gPath);
+  gLine.setAttribute('fill', 'none');
+  gLine.setAttribute('stroke', green);
+  gLine.setAttribute('stroke-width', '2.5');
+  gLine.setAttribute('stroke-linecap', 'round');
+  gLine.setAttribute('stroke-linejoin', 'round');
+  g.appendChild(gLine);
+
+  const { yellow, green: greenIdx } = getCriticalPlotIndices(attackerRoster, defenderRoster);
+  const criticalMarker = getSelectedCriticalIndex(attackerRoster, defenderRoster);
+
+  if (yellow !== null) {
+    const x = yellow * xScale;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x);
+    line.setAttribute('y1', 0);
+    line.setAttribute('x2', x);
+    line.setAttribute('y2', height);
+    line.setAttribute('stroke', '#d4a52d');
+    line.setAttribute('stroke-width', '2');
+    line.setAttribute('stroke-dasharray', '6 6');
+    line.setAttribute('opacity', '0.9');
+    g.appendChild(line);
+
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', x + 6);
+    label.setAttribute('y', 18);
+    label.setAttribute('fill', '#8d6000');
+    label.setAttribute('font-size', '11');
+    label.setAttribute('font-weight', '700');
+    label.textContent = `Critical: ${attackerData[yellow].tier}`;
+    g.appendChild(label);
+  }
+
+  if (greenIdx !== null) {
+    const x = greenIdx * xScale;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x);
+    line.setAttribute('y1', 0);
+    line.setAttribute('x2', x);
+    line.setAttribute('y2', height);
+    line.setAttribute('stroke', green);
+    line.setAttribute('stroke-width', '2');
+    line.setAttribute('stroke-dasharray', '6 6');
+    line.setAttribute('opacity', '0.9');
+    g.appendChild(line);
+
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', x + 6);
+    label.setAttribute('y', 34);
+    label.setAttribute('fill', '#2b8f4d');
+    label.setAttribute('font-size', '11');
+    label.setAttribute('font-weight', '700');
+    label.textContent = `Offset: ${attackerData[greenIdx].tier}`;
+    g.appendChild(label);
+  }
+
+  if (criticalMarker !== null && criticalMarker !== yellow && criticalMarker !== greenIdx) {
+    const x = criticalMarker * xScale;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x);
+    line.setAttribute('y1', 0);
+    line.setAttribute('x2', x);
+    line.setAttribute('y2', height);
+    line.setAttribute('stroke', '#8d6000');
+    line.setAttribute('stroke-width', '2');
+    line.setAttribute('stroke-dasharray', '3 5');
+    line.setAttribute('opacity', '0.9');
+    g.appendChild(line);
+
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', x + 6);
+    label.setAttribute('y', 50);
+    label.setAttribute('fill', '#000000');
+    label.setAttribute('font-size', '11');
+    label.setAttribute('font-weight', '700');
+    label.textContent = `Critical Tier: ${attackerData[criticalMarker].tier}`;
+    g.appendChild(label);
+  }
+
+  const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  xAxis.setAttribute('x1', '0');
+  xAxis.setAttribute('y1', height);
+  xAxis.setAttribute('x2', width);
+  xAxis.setAttribute('y2', height);
+  xAxis.setAttribute('stroke', '#333');
+  xAxis.setAttribute('stroke-width', '2');
+  g.appendChild(xAxis);
+
+  const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  yAxis.setAttribute('x1', '0');
+  yAxis.setAttribute('y1', '0');
+  yAxis.setAttribute('x2', '0');
+  yAxis.setAttribute('y2', height);
+  yAxis.setAttribute('stroke', '#333');
+  yAxis.setAttribute('stroke-width', '2');
+  g.appendChild(yAxis);
+
+  const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  yLabel.setAttribute('x', '-' + (height / 2));
+  yLabel.setAttribute('y', '-45');
+  yLabel.setAttribute('text-anchor', 'middle');
+  yLabel.setAttribute('transform', 'rotate(-90)');
+  yLabel.setAttribute('font-size', '12');
+  yLabel.setAttribute('font-weight', '700');
+  yLabel.setAttribute('fill', '#333');
+  yLabel.textContent = 'Cumulative Count';
+  g.appendChild(yLabel);
+
+  const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  xLabel.setAttribute('x', width / 2);
+  xLabel.setAttribute('y', height + 35);
+  xLabel.setAttribute('text-anchor', 'middle');
+  xLabel.setAttribute('font-size', '12');
+  xLabel.setAttribute('font-weight', '700');
+  xLabel.setAttribute('fill', '#333');
+  xLabel.textContent = 'Power Tier';
+  g.appendChild(xLabel);
+}
+
+    function drawAttackPlot(trace, attackerRoster, defenderRoster, containerId, isYourClan){
+      const svg=$(containerId).querySelector('svg'); svg.innerHTML='';
+      if(!trace || !trace.length){
+        const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+        t.setAttribute('x','400'); t.setAttribute('y','130'); t.setAttribute('text-anchor','middle'); t.setAttribute('fill','#666'); t.setAttribute('font-size','14'); t.textContent='No attack data'; svg.appendChild(t); return;
+      }
+
+      const maxRank=Math.max(attackerRoster.length, defenderRoster.length, 50);
+      const margin={top:20,right:30,bottom:40,left:50}; const width=800-margin.left-margin.right, height=260-margin.top-margin.bottom;
+      const g=document.createElementNS('http://www.w3.org/2000/svg','g'); g.setAttribute('transform',`translate(${margin.left},${margin.top})`); svg.appendChild(g);
+      const yStep=height/Math.max(maxRank-1,1);
+      const dColor=isYourClan?'#2a7ae2':'#e35d5d';
+
+      const marker=document.createElementNS('http://www.w3.org/2000/svg','marker');
+      marker.setAttribute('id',isYourClan?'arrowY':'arrowE');
+      marker.setAttribute('markerWidth','8'); marker.setAttribute('markerHeight','8'); marker.setAttribute('refX','4'); marker.setAttribute('refY','2'); marker.setAttribute('orient','auto');
+      const mp=document.createElementNS('http://www.w3.org/2000/svg','path'); mp.setAttribute('d','M0,0 L4,2 L0,4 Z'); mp.setAttribute('fill',dColor); marker.appendChild(mp); svg.appendChild(marker);
+
+      const groups=[]; let current=[];
+      trace.forEach(move => { current.push(move); if(move.reset){ if(current.length) groups.push(current); current=[]; }});
+      if(current.length) groups.push(current);
+
+      const cols=Math.max(groups.length,1), colWidth=width/cols;
+      groups.forEach((moves, cIdx)=>{
+        const center=(cIdx+0.5)*colWidth, left=center-18, right=center+18;
+        moves.forEach(move=>{
+          const attackerY=(move.attackerRank - 1) * yStep;
+          const defenderY=(move.defenderRank - 1) * yStep;
+
+          const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+          line.setAttribute('x1',left); line.setAttribute('y1',attackerY); line.setAttribute('x2',right); line.setAttribute('y2',defenderY);
+          line.setAttribute('stroke',dColor); line.setAttribute('stroke-width','1.8'); line.setAttribute('stroke-linecap','round'); line.setAttribute('marker-end',`url(#${isYourClan?'arrowY':'arrowE'})`); g.appendChild(line);
+
+          const aDot=document.createElementNS('http://www.w3.org/2000/svg','circle'); aDot.setAttribute('cx',left); aDot.setAttribute('cy',attackerY); aDot.setAttribute('r','3'); aDot.setAttribute('fill',dColor); g.appendChild(aDot);
+          const dDot=document.createElementNS('http://www.w3.org/2000/svg','circle'); dDot.setAttribute('cx',right); dDot.setAttribute('cy',defenderY); dDot.setAttribute('r','3'); dDot.setAttribute('fill',dColor); g.appendChild(dDot);
+        });
+      });
+
+      const leftLine=document.createElementNS('http://www.w3.org/2000/svg','line'); leftLine.setAttribute('x1','0'); leftLine.setAttribute('y1','0'); leftLine.setAttribute('x2','0'); leftLine.setAttribute('y2',height); leftLine.setAttribute('stroke','#333'); leftLine.setAttribute('stroke-width','1.5'); g.appendChild(leftLine);
+      const rightLine=document.createElementNS('http://www.w3.org/2000/svg','line'); rightLine.setAttribute('x1',width); rightLine.setAttribute('y1','0'); rightLine.setAttribute('x2',width); rightLine.setAttribute('y2',height); rightLine.setAttribute('stroke','#333'); rightLine.setAttribute('stroke-width','1.5'); g.appendChild(rightLine);
+      const xLabel=document.createElementNS('http://www.w3.org/2000/svg','text'); xLabel.setAttribute('x',width/2); xLabel.setAttribute('y',height+28); xLabel.setAttribute('text-anchor','middle'); xLabel.setAttribute('font-size','12'); xLabel.setAttribute('fill','#333'); xLabel.setAttribute('font-weight','700'); xLabel.textContent='attacks between resets'; g.appendChild(xLabel);
+      const yLabel=document.createElementNS('http://www.w3.org/2000/svg','text'); yLabel.setAttribute('x','-'+(height/2)); yLabel.setAttribute('y','-18'); yLabel.setAttribute('text-anchor','middle'); yLabel.setAttribute('transform','rotate(-90)'); yLabel.setAttribute('font-size','12'); yLabel.setAttribute('fill','#333'); yLabel.setAttribute('font-weight','700'); yLabel.textContent='Rank (1 top → 50 bottom)'; g.appendChild(yLabel);
+    }
+
+function getAttackOrder(attackers){
+  return attackers.slice().sort((a, b) => {
+    if (a.value !== b.value) return a.value - b.value;
+    if (a.rank !== b.rank) return a.rank - b.rank;
+    return a.score - b.score;
+  });
+}
+
+function isSamePowerAllowed(mode, phase){
+  if (mode === 'same') return true;
+  if (mode === 'greater') return phase === 'phase3' || phase === 'phase4';
+  return false;
+}
+
+function isAttackerNonViable(attacker, defenders){
+  if (!defenders.length) return false;
+  const weakestDefender = defenders[defenders.length - 1].value;
+  return attacker.value <= weakestDefender;
+}
+
+function isTargetAllowed(attacker, defender, mode, phase, criticalThreshold){
+  if (isSamePowerAllowed(mode, phase) && defender.value === attacker.value) return true;
+
+  if (attacker.value >= criticalThreshold && defender.value < criticalThreshold && (phase === 'phase2' || phase === 'phase4')) {
+    return false;
+  }
+
+  if (defender.value > attacker.value) return false;
+  return true;
+}
+
+function getValidTargets(attacker, defenders, phase, criticalThreshold, mode){
+  const viableTargets = defenders.filter(d => d.available && isTargetAllowed(attacker, d, mode, phase, criticalThreshold));
+
+  const lowerPower = viableTargets
+    .filter(d => d.value < attacker.value)
+    .sort((a, b) => b.value - a.value || b.score - a.score || a.rank - b.rank);
+
+  const samePower = viableTargets
+    .filter(d => d.value === attacker.value)
+    .sort((a, b) => b.value - a.value || b.score - a.score || a.rank - b.rank);
+
+  if (!isAttackerNonViable(attacker, defenders)) {
+    return [...lowerPower, ...samePower];
+  }
+
+  return [...samePower, ...lowerPower];
+}
+
+function resolveAttack(attacker, defender, mode, phase){
+  if (defender.value < attacker.value) {
+    return { success: true, reward: defender.score };
+  }
+
+  if (mode === 'same' && defender.value === attacker.value) {
+    return { success: true, reward: defender.score };
+  }
+
+  if (mode === 'greater' && defender.value === attacker.value && (phase === 'phase3' || phase === 'phase4')) {
+    const success = Math.random() < 0.5;
+    return { success, reward: success ? defender.score : 0 };
+  }
+
+  return { success: false, reward: 0 };
+}
+
+function runSimPhase(attackers, defenders, phase, criticalThreshold, mode, trace, scoreRef, resetsRef){
+  let actionTaken = false;
+  let RNG = Math.random();
+
+  for (const attacker of getAttackOrder(attackers.filter(a => a.attempts < 5))) {
+    if (attacker.attempts >= 5) continue;
+
+    const candidates = getValidTargets(attacker, defenders, phase, criticalThreshold, mode);
+    if (!candidates.length) continue;
+
+    const defender = candidates[0];
+    const result = resolveAttack(attacker, defender, mode, phase);
+
+    attacker.attempts += 1;
+    actionTaken = true;
+
+    const samePowerFallbackHit =
+      mode === 'greater' &&
+      defender.value === attacker.value &&
+      (phase === 'phase3' || phase === 'phase4') &&
+      result.success;
+
+    const standardHit =
+      defender.value < attacker.value ||
+      (mode === 'same' && defender.value === attacker.value) ||
+      samePowerFallbackHit;
+
+    if (standardHit) {
+      defender.available = false;
+      scoreRef.value += result.reward;
+      trace.push({ attackerRank: attacker.rank, defenderRank: defender.rank, result: 'HIT', reset: false });
+
+      if (defenders.every(d => !d.available)) {
+        defenders.forEach(d => d.available = true);
+        resetsRef.value += 1;
+        if (trace.length) trace[trace.length - 1].reset = true;
+      }
+    } else {
+      RNG = Math.random();
+      if (RNG > 0.5) {
+        defender.available = false;
+        scoreRef.value += result.reward;
+        trace.push({ attackerRank: attacker.rank, defenderRank: defender.rank, result: 'HIT', reset: false });
+      } else {
+        trace.push({ attackerRank: attacker.rank, defenderRank: defender.rank, result: 'MISS', reset: false });
+      }
+    }
+  }
+
+  return actionTaken;
+}
+
+function simulateBattle1(attackerRoster, defenderRoster){
+  const attackers = attackerRoster.slice()
+    .sort((a, b) => b.value - a.value || b.score - a.score)
+    .map((unit, index) => ({ ...unit, rank: index + 1, attempts: 0, available: true }));
+
+  const defenderSpread = getDefenderCount(defenderRoster.length);
+  const defenders = defenderRoster.slice(-defenderSpread)
+    .sort((a, b) => b.value - a.value || b.score - a.score)
+    .map((unit, index) => ({ ...unit, rank: index + 1, available: true }));
+
+  const criticalThreshold = findCriticalTier(attackerRoster, defenderRoster).value;
+  const trace = [];
+  const scoreRef = { value: 0 };
+  const resetsRef = { value: 0 };
+
+  let guard = 0;
+  while (guard < 20000) {
+    guard += 1;
+
+    const remaining = attackers.filter(a => a.attempts < 5);
+    if (!remaining.length) break;
+
+    let anyActionThisCycle = false;
+
+    const phase1Possible = remaining.some(a => getValidTargets(a, defenders, 'phase1', criticalThreshold, 'greater').length > 0);
+    if (phase1Possible) {
+      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase1', criticalThreshold, 'greater', trace, scoreRef, resetsRef) || anyActionThisCycle;
+    }
+
+    const phase2Possible = remaining.some(a => a.value >= criticalThreshold && getValidTargets(a, defenders, 'phase2', criticalThreshold, 'greater').length > 0);
+    const lowerPowerStillHasPhase1 = remaining.some(a => a.value < criticalThreshold && getValidTargets(a, defenders, 'phase1', criticalThreshold, 'greater').length > 0);
+
+    if (!lowerPowerStillHasPhase1 && phase2Possible) {
+      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase2', criticalThreshold, 'greater', trace, scoreRef, resetsRef) || anyActionThisCycle;
+    }
+
+    const phase3Possible = remaining.some(a => getValidTargets(a, defenders, 'phase3', criticalThreshold, 'greater').length > 0);
+    if (phase3Possible) {
+      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase3', criticalThreshold, 'greater', trace, scoreRef, resetsRef) || anyActionThisCycle;
+    }
+
+    const phase4Possible = remaining.some(a => a.value >= criticalThreshold && getValidTargets(a, defenders, 'phase4', criticalThreshold, 'greater').length > 0);
+    if (phase4Possible) {
+      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase4', criticalThreshold, 'greater', trace, scoreRef, resetsRef) || anyActionThisCycle;
+    }
+
+    if (!anyActionThisCycle) break;
+  }
+
+  let finalScore = 0;
+  for (const move of trace) {
+    if (move.result === 'HIT') {
+      const defender = defenders.find(d => d.rank === move.defenderRank);
+      if (defender) finalScore += defender.score;
+    }
+  }
+
+  let finalResets = 0;
+  for (const move of trace) {
+    if (move.reset) finalResets += 1;
+  }
+
+  return { score: finalScore, resets: finalResets, trace, attackers, defenders, roster: attackerRoster };
+}
+
+function simulateBattle(attackerRoster, defenderRoster){
+  return simulateBattle1(attackerRoster, defenderRoster);
+}
+
+function simulateBattle2(attackerRoster, defenderRoster){
+  const attackers = attackerRoster.slice()
+    .sort((a, b) => b.value - a.value || b.score - a.score)
+    .map((unit, index) => ({ ...unit, rank: index + 1, attempts: 0, available: true }));
+
+  const defenderSpread = getDefenderCount(defenderRoster.length);
+  const defenders = defenderRoster.slice(-defenderSpread)
+    .sort((a, b) => b.value - a.value || b.score - a.score)
+    .map((unit, index) => ({ ...unit, rank: index + 1, available: true }));
+
+  const criticalThreshold = findCriticalTier(attackerRoster, defenderRoster).value;
+  const trace = [];
+  const scoreRef = { value: 0 };
+  const resetsRef = { value: 0 };
+
+  let guard = 0;
+  while (guard < 20000) {
+    guard += 1;
+
+    const remaining = attackers.filter(a => a.attempts < 5);
+    if (!remaining.length) break;
+
+    let anyActionThisCycle = false;
+
+    const phase1Possible = remaining.some(a => getValidTargets(a, defenders, 'phase1', criticalThreshold, 'same').length > 0);
+    if (phase1Possible) {
+      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase1', criticalThreshold, 'same', trace, scoreRef, resetsRef) || anyActionThisCycle;
+    }
+
+    const phase2Possible = remaining.some(a => a.value >= criticalThreshold && getValidTargets(a, defenders, 'phase2', criticalThreshold, 'same').length > 0);
+    const lowerPowerStillHasPhase1 = remaining.some(a => a.value < criticalThreshold && getValidTargets(a, defenders, 'phase1', criticalThreshold, 'same').length > 0);
+
+    if (!lowerPowerStillHasPhase1 && phase2Possible) {
+      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase2', criticalThreshold, 'same', trace, scoreRef, resetsRef) || anyActionThisCycle;
+    }
+
+    if (!anyActionThisCycle) break;
+  }
+
+  let finalScore = 0;
+  for (const move of trace) {
+    if (move.result === 'HIT') {
+      const defender = defenders.find(d => d.rank === move.defenderRank);
+      if (defender) finalScore += defender.score;
+    }
+  }
+
+  let finalResets = 0;
+  for (const move of trace) {
+    if (move.reset) finalResets += 1;
+  }
+
+  return { score: finalScore, resets: finalResets, trace, attackers, defenders, roster: attackerRoster };
+}
+
+    let attackLogs = {
+      greater: { your: { trace: [], roster: [], attempts: {} }, enemy: { trace: [], roster: [], attempts: {} } },
+      same: { your: { trace: [], roster: [], attempts: {} }, enemy: { trace: [], roster: [], attempts: {} } }
+    };
+
+    function getRankTierLabel(roster, rank){
+      if(!roster || !Array.isArray(roster) || rank < 1) return 'unknown';
+      const entry = roster[rank - 1];
+      return entry ? entry.tier : 'unknown';
+    }
+
+    function buildAttackLogSummary(containerId, roster, attemptsMap){
+      const box = $(containerId);
+      if(!roster || !roster.length){ box.textContent='No roster summary'; return; }
+      box.textContent = roster.map((unit, idx) => {
+        const rank = idx + 1;
+        const tier = unit.tier;
+        const attemptsLeft = attemptsMap && attemptsMap[rank] !== undefined ? attemptsMap[rank] : 5;
+        return `Rank ${rank} [${tier}] | attacks left: ${attemptsLeft}`;
+      }).join('\n');
+    }
+
+    function fillAttackLogTable(bodyId, trace, attackerRoster, defenderRoster){
+      const tbody = $(bodyId);
+      tbody.innerHTML = '';
+
+      if(!trace || !trace.length){
+        tbody.innerHTML = '<tr><td colspan=\"4\">No attack data</td></tr>';
         return;
       }
 
-      const defenderCount = defenderRoster.length;
-      const defenderSize = getDefenderCount(defenderCount);
-      const defenders = defenderRoster.slice(-defenderSize);
+      const attackerLookup = attackerRoster ? attackerRoster.map((unit, idx) => ({rank: idx + 1, tier: unit.tier})) : [];
+      const defenderLookup = defenderRoster ? defenderRoster.map((unit, idx) => ({rank: idx + 1, tier: unit.tier})) : [];
 
-      const minValue = Math.min(
-        Math.min(...yourRoster.map(m => m.value)),
-        Math.min(...defenders.map(d => d.value))
-      );
-      const maxValue = Math.max(
-        Math.max(...yourRoster.map(m => m.value)),
-        Math.max(...defenders.map(d => d.value))
-      );
+      trace.forEach((move, index) => {
+        const attackerTier = getRankTierLabel(attackerLookup, move.attackerRank);
+        const defenderTier = getRankTierLabel(defenderLookup, move.defenderRank);
 
-      const yourData = buildCumulativeData(yourRoster, minValue, maxValue);
-      const defenderData = buildCumulativeData(defenders, minValue, maxValue);
-      const attackingData = (isYourClan ? yourData : defenderData);
-      const attackerShiftedData = attackingData.map((point, index) => ({
-        ...point,
-        xIndex: Math.min(index + 1, attackingData.length - 1)
-      }));
-
-      const crossoverIndex = (() => {
-        for (let i = 0; i < yourData.length; i++) {
-          const attackerCount = yourData[i]?.cumulative ?? 0;
-          const defenderCount = defenderData[i]?.cumulative ?? 0;
-          if (attackerCount < defenderCount) return i;
-        }
-        return null;
-      })();
-
-      const crossoverTier = crossoverIndex !== null ? yourData[crossoverIndex].tier : null;
-
-      const margin = { top: 20, right: 20, bottom: 40, left: 60 };
-      const width = 800 - margin.left - margin.right;
-      const height = 250 - margin.top - margin.bottom;
-
-      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-      g.setAttribute('transform', `translate(${margin.left},${margin.top})`);
-      svg.appendChild(g);
-
-      const maxCumulative = Math.max(
-        Math.max(...yourData.map(d => d.cumulative), 1),
-        Math.max(...defenderData.map(d => d.cumulative), 1)
-      );
-
-      const xScale = width / Math.max(Math.max(yourData.length, defenderData.length) - 1, 1);
-      const yScale = height / maxCumulative;
-
-      const yourColor = isYourClan ? '#2a7ae2' : '#e35d5d';
-      const defenderColor = isYourClan ? '#e35d5d' : '#2a7ae2';
-      const attackerShiftColor = '#2ec66c';
-
-      const yAxisSteps = 5;
-      for (let i = 0; i <= yAxisSteps; i++) {
-        const yVal = maxCumulative * (i / yAxisSteps);
-        const y = height - (yVal * yScale);
-
-        const gridline = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        gridline.setAttribute('x1', '0');
-        gridline.setAttribute('y1', y);
-        gridline.setAttribute('x2', width);
-        gridline.setAttribute('y2', y);
-        gridline.setAttribute('stroke', '#e0e0e0');
-        gridline.setAttribute('stroke-width', '1');
-        gridline.setAttribute('opacity', '0.5');
-        g.appendChild(gridline);
-
-        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        label.setAttribute('x', '-8');
-        label.setAttribute('y', y + 4);
-        label.setAttribute('text-anchor', 'end');
-        label.setAttribute('font-size', '11');
-        label.setAttribute('fill', '#666');
-        label.setAttribute('font-weight', '600');
-        label.textContent = Math.round(yVal);
-        g.appendChild(label);
-      }
-
-      const xAxisLabels = ['2q', '1q', '1t', '1b', '1m', '1k'];
-      const xAxisIndices = [];
-      for (let label of xAxisLabels) {
-        for (let i = 0; i < yourData.length; i++) {
-          if (yourData[i].tier === label) {
-            xAxisIndices.push(i);
-            break;
-          }
-        }
-      }
-
-      for (let i = 0; i < xAxisIndices.length; i++) {
-        const idx = xAxisIndices[i];
-        const x = idx * xScale;
-        const label = xAxisLabels[i];
-
-        const xTickLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        xTickLine.setAttribute('x1', x);
-        xTickLine.setAttribute('y1', height);
-        xTickLine.setAttribute('x2', x);
-        xTickLine.setAttribute('y2', height + 6);
-        xTickLine.setAttribute('stroke', '#666');
-        xTickLine.setAttribute('stroke-width', '1');
-        g.appendChild(xTickLine);
-
-        const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        xLabel.setAttribute('x', x);
-        xLabel.setAttribute('y', height + 20);
-        xLabel.setAttribute('text-anchor', 'middle');
-        xLabel.setAttribute('font-size', '11');
-        xLabel.setAttribute('fill', '#666');
-        xLabel.setAttribute('font-weight', '600');
-        xLabel.textContent = label;
-        g.appendChild(xLabel);
-      }
-
-      let yourPathData = '';
-      for (let i = 0; i < yourData.length; i++) {
-        const x = i * xScale;
-        const y = height - yourData[i].cumulative * yScale;
-        yourPathData += (i === 0 ? 'M' : 'L') + ` ${x} ${y}`;
-      }
-
-      const yourPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      yourPath.setAttribute('d', yourPathData);
-      yourPath.setAttribute('fill', 'none');
-      yourPath.setAttribute('stroke', yourColor);
-      yourPath.setAttribute('stroke-width', '2.5');
-      yourPath.setAttribute('stroke-linecap', 'round');
-      yourPath.setAttribute('stroke-linejoin', 'round');
-      g.appendChild(yourPath);
-
-      let defenderPathData = '';
-      for (let i = 0; i < defenderData.length; i++) {
-        const x = i * xScale;
-        const y = height - defenderData[i].cumulative * yScale;
-        defenderPathData += (i === 0 ? 'M' : 'L') + ` ${x} ${y}`;
-      }
-
-      const defenderPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      defenderPath.setAttribute('d', defenderPathData);
-      defenderPath.setAttribute('fill', 'none');
-      defenderPath.setAttribute('stroke', defenderColor);
-      defenderPath.setAttribute('stroke-width', '2.5');
-      defenderPath.setAttribute('stroke-linecap', 'round');
-      defenderPath.setAttribute('stroke-linejoin', 'round');
-      defenderPath.setAttribute('stroke-dasharray', '5,5');
-      g.appendChild(defenderPath);
-
-      let attackerShiftPathData = '';
-      for (let i = 0; i < attackerShiftedData.length; i++) {
-        const point = attackerShiftedData[i];
-        const x = point.xIndex * xScale;
-        const y = height - point.cumulative * yScale;
-        attackerShiftPathData += (i === 0 ? 'M' : 'L') + ` ${x} ${y}`;
-      }
-
-      const attackerShiftPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      attackerShiftPath.setAttribute('d', attackerShiftPathData);
-      attackerShiftPath.setAttribute('fill', 'none');
-      attackerShiftPath.setAttribute('stroke', attackerShiftColor);
-      attackerShiftPath.setAttribute('stroke-width', '2.5');
-      attackerShiftPath.setAttribute('stroke-linecap', 'round');
-      attackerShiftPath.setAttribute('stroke-linejoin', 'round');
-      attackerShiftPath.setAttribute('opacity', '0.95');
-      g.appendChild(attackerShiftPath);
-
-      if (crossoverIndex !== null) {
-        const crossX = crossoverIndex * xScale;
-
-        const crossoverLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        crossoverLine.setAttribute('x1', crossX);
-        crossoverLine.setAttribute('y1', 0);
-        crossoverLine.setAttribute('x2', crossX);
-        crossoverLine.setAttribute('y2', height);
-        crossoverLine.setAttribute('stroke', '#d4a52d');
-        crossoverLine.setAttribute('stroke-width', '2');
-        crossoverLine.setAttribute('stroke-dasharray', '6 6');
-        crossoverLine.setAttribute('opacity', '0.9');
-        g.appendChild(crossoverLine);
-
-        const crossoverLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        crossoverLabel.setAttribute('x', crossX + 6);
-        crossoverLabel.setAttribute('y', 18);
-        crossoverLabel.setAttribute('fill', '#8d6000');
-        crossoverLabel.setAttribute('font-size', '11');
-        crossoverLabel.setAttribute('font-weight', '700');
-        crossoverLabel.textContent = `Critical: ${crossoverTier}`;
-        g.appendChild(crossoverLabel);
-      }
-
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', '0');
-      xAxis.setAttribute('y1', height);
-      xAxis.setAttribute('x2', width);
-      xAxis.setAttribute('y2', height);
-      xAxis.setAttribute('stroke', '#333');
-      xAxis.setAttribute('stroke-width', '2');
-      g.appendChild(xAxis);
-
-      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxis.setAttribute('x1', '0');
-      yAxis.setAttribute('y1', '0');
-      yAxis.setAttribute('x2', '0');
-      yAxis.setAttribute('y2', height);
-      yAxis.setAttribute('stroke', '#333');
-      yAxis.setAttribute('stroke-width', '2');
-      g.appendChild(yAxis);
-
-      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabel.setAttribute('x', '-' + (height / 2));
-      yLabel.setAttribute('y', '-45');
-      yLabel.setAttribute('text-anchor', 'middle');
-      yLabel.setAttribute('transform', 'rotate(-90)');
-      yLabel.setAttribute('font-size', '12');
-      yLabel.setAttribute('font-weight', '700');
-      yLabel.setAttribute('fill', '#333');
-      yLabel.textContent = 'Cumulative Count';
-      g.appendChild(yLabel);
-
-      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabel.setAttribute('x', width / 2);
-      xLabel.setAttribute('y', height + 35);
-      xLabel.setAttribute('text-anchor', 'middle');
-      xLabel.setAttribute('font-size', '12');
-      xLabel.setAttribute('font-weight', '700');
-      xLabel.setAttribute('fill', '#333');
-      xLabel.textContent = 'Power Tier';
-      g.appendChild(xLabel);
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${move.attackerRank} [${attackerTier}]</td>
+          <td>${move.defenderRank} [${defenderTier}]</td>
+          <td>${move.result || (move.reset ? 'RESET' : 'ATTACK')}</td>
+        `;
+        tbody.appendChild(row);
+      });
     }
 
-    function simulateBattle(attackerRoster, defenderRoster) {
-      const attackerCount = attackerRoster.length;
-      const defenderCount = defenderRoster.length;
+    function populateAttackLogs(){
+      fillAttackLogTable('yourGreaterAttackLogBody', attackLogs.greater.your.trace, attackLogs.greater.your.roster, attackLogs.greater.enemy.roster);
+      fillAttackLogTable('enemyGreaterAttackLogBody', attackLogs.greater.enemy.trace, attackLogs.greater.enemy.roster, attackLogs.greater.your.roster);
 
-      if (attackerCount === 0 || defenderCount === 0) {
-        return { resets: 0, score: 0 };
-      }
+      fillAttackLogTable('yourSameAttackLogBody', attackLogs.same.your.trace, attackLogs.same.your.roster, attackLogs.same.enemy.roster);
+      fillAttackLogTable('enemySameAttackLogBody', attackLogs.same.enemy.trace, attackLogs.same.enemy.roster, attackLogs.same.your.roster);
 
-      const resetReq = getDefenderCount(defenderCount);
-
-      const defenders = defenderRoster.map(d => ({ ...d, available: true }));
-      const attackers = attackerRoster.map(a => ({ ...a, attacks: 5 }));
-
-      let totalResets = 0;
-      let totalScore = 0;
-      let beatCount = 0;
-
-      let changed = true;
-      while (changed) {
-        changed = false;
-
-        for (let a of attackers) {
-          if (a.attacks <= 0) continue;
-
-          for (let i = defenders.length - 1; i >= 0; i--) {
-            const d = defenders[i];
-            if (d.available && a.value > d.value) {
-              totalScore += d.score;
-              d.available = false;
-              a.attacks--;
-              beatCount++;
-              changed = true;
-              break;
-            }
-          }
-        }
-
-        if (beatCount >= resetReq) {
-          totalResets++;
-          beatCount = 0;
-          defenders.forEach(d => d.available = true);
-
-          if (totalResets >= 4) break;
-        }
-      }
-
-      return { resets: totalResets, score: totalScore };
+      buildAttackLogSummary('yourGreaterAttackLogSummary', attackLogs.greater.your.roster, attackLogs.greater.your.attempts);
+      buildAttackLogSummary('enemyGreaterAttackLogSummary', attackLogs.greater.enemy.roster, attackLogs.greater.enemy.attempts);
+      buildAttackLogSummary('yourSameAttackLogSummary', attackLogs.same.your.roster, attackLogs.same.your.attempts);
+      buildAttackLogSummary('enemySameAttackLogSummary', attackLogs.same.enemy.roster, attackLogs.same.enemy.attempts);
     }
 
-    function simulate() {
-      try {
-        updateStatus('Parsing rosters...', 'ready');
+    function toggleAttackLogPanel(panelId){
+      const panel=document.getElementById(panelId);
+      const btn=document.querySelector(`[data-target="${panelId}"]`);
 
-        const yourRoster = parseTeam('your');
-        const enemyRoster = parseTeam('enemy');
+      document.querySelectorAll('.attack-log-panel').forEach(el => el.classList.remove('visible'));
+      document.querySelectorAll('.toggle-log-btn').forEach(el => el.classList.remove('active'));
 
-        if (yourRoster.length === 0 || enemyRoster.length === 0) {
-          updateStatus('❌ Error: Both clans must have at least 1 unit!', 'error');
+      if(panel && !panel.classList.contains('visible')) panel.classList.add('visible');
+      if(btn) btn.classList.add('active');
+    }
+
+    document.addEventListener('click', (event) => {
+      const btn = event.target.closest('.toggle-log-btn');
+      if(!btn) return;
+      toggleAttackLogPanel(btn.dataset.target);
+    });
+
+    function simulate(){
+      try{
+        updateStatus('Parsing rosters...','ready');
+
+        const yourRoster=parseTeam('your');
+        const enemyRoster=parseTeam('enemy');
+
+        if(!yourRoster.length || !enemyRoster.length){
+          updateStatus('❌ Error: Both clans must have at least 1 unit!','error');
           return;
         }
 
-        updateStatus('Validating teams...', 'ready');
+        updateStatus('Validating teams...','ready');
+        const yourValidation=sortAndValidate(yourRoster), enemyValidation=sortAndValidate(enemyRoster);
+        const yourWarning=$('yourClanWarning'), enemyWarning=$('enemyClanWarning');
+        if(yourValidation.warning){ yourWarning.textContent=yourValidation.warning; yourWarning.style.display='block'; } else { yourWarning.style.display='none'; }
+        if(enemyValidation.warning){ enemyWarning.textContent=enemyValidation.warning; enemyWarning.style.display='block'; } else { enemyWarning.style.display='none'; }
 
-        const yourValidation = sortAndValidate(yourRoster);
-        const enemyValidation = sortAndValidate(enemyRoster);
+        const yourFinal=assignScores(yourValidation.roster), enemyFinal=assignScores(enemyValidation.roster);
 
-        const yourWarning = $('yourClanWarning');
-        const enemyWarning = $('enemyClanWarning');
+        $('yourClanSummary').textContent=getSummary(yourFinal);
+        $('enemyClanSummary').textContent=getSummary(enemyFinal);
+        $('yourClanRoster').textContent=formatRoster(yourFinal);
+        $('enemyClanRoster').textContent=formatRoster(enemyFinal);
 
-        if (yourValidation.warning) {
-          yourWarning.textContent = yourValidation.warning;
-          yourWarning.style.display = 'block';
-        } else {
-          yourWarning.style.display = 'none';
-        }
+        updateStatus('Analyzing members...','ready');
+        const yourAnalysis=analyzeMembers(yourFinal,enemyFinal), enemyAnalysis=analyzeMembers(enemyFinal,yourFinal);
+        $('yourCriticalMembers').textContent=formatAnalysis(yourAnalysis.critical);
+        $('yourViableMembers').textContent=formatAnalysis(yourAnalysis.viable);
+        $('yourNonViableMembers').textContent=formatAnalysis(yourAnalysis.nonViable);
+        $('enemyCriticalMembers').textContent=formatAnalysis(enemyAnalysis.critical);
+        $('enemyViableMembers').textContent=formatAnalysis(enemyAnalysis.viable);
+        $('enemyNonViableMembers').textContent=formatAnalysis(enemyAnalysis.nonViable);
 
-        if (enemyValidation.warning) {
-          enemyWarning.textContent = enemyValidation.warning;
-          enemyWarning.style.display = 'block';
-        } else {
-          enemyWarning.style.display = 'none';
-        }
+        $('yourCriticalGroupSize').textContent=yourAnalysis.criticalGroupSize;
+        $('yourCriticalTier').textContent=yourAnalysis.criticalTier;
+        $('yourEnemySpread').textContent=yourAnalysis.enemySpread;
 
-        updateStatus('Calculating scores...', 'ready');
+        $('enemyCriticalGroupSize').textContent=enemyAnalysis.criticalGroupSize;
+        $('enemyCriticalTier').textContent=enemyAnalysis.criticalTier;
+        $('enemyYourSpread').textContent=enemyAnalysis.enemySpread;
 
-        const yourFinal = assignScores(yourValidation.roster);
-        const enemyFinal = assignScores(enemyValidation.roster);
+        updateStatus('Running battle simulations...','ready');
 
-        $('yourClanSummary').textContent = getSummary(yourFinal);
-        $('enemyClanSummary').textContent = getSummary(enemyFinal);
-        $('yourClanRoster').textContent = formatRoster(yourFinal);
-        $('enemyClanRoster').textContent = formatRoster(enemyFinal);
+        const greaterYour = simulateBattle1(yourFinal, enemyFinal);
+        const greaterEnemy = simulateBattle1(enemyFinal, yourFinal);
 
-        updateStatus('Analyzing members...', 'ready');
+        const sameYour = simulateBattle2(yourFinal, enemyFinal);
+        const sameEnemy = simulateBattle2(enemyFinal, yourFinal);
 
-        const yourAnalysis = analyzeMembers(yourFinal, enemyFinal);
-        const enemyAnalysis = analyzeMembers(enemyFinal, yourFinal);
+        attackLogs.greater.your.trace = greaterYour.trace;
+        attackLogs.greater.your.roster = yourFinal;
+        attackLogs.greater.your.attempts = {};
+        greaterYour.attackers.forEach(unit => { attackLogs.greater.your.attempts[unit.rank] = 5 - unit.attempts; });
 
-        $('yourCriticalMembers').textContent = formatAnalysis(yourAnalysis.critical);
-        $('yourViableMembers').textContent = formatAnalysis(yourAnalysis.viable);
-        $('yourNonViableMembers').textContent = formatAnalysis(yourAnalysis.nonViable);
+        attackLogs.greater.enemy.trace = greaterEnemy.trace;
+        attackLogs.greater.enemy.roster = enemyFinal;
+        attackLogs.greater.enemy.attempts = {};
+        greaterEnemy.attackers.forEach(unit => { attackLogs.greater.enemy.attempts[unit.rank] = 5 - unit.attempts; });
 
-        $('enemyCriticalMembers').textContent = formatAnalysis(enemyAnalysis.critical);
-        $('enemyViableMembers').textContent = formatAnalysis(enemyAnalysis.viable);
-        $('enemyNonViableMembers').textContent = formatAnalysis(enemyAnalysis.nonViable);
+        attackLogs.same.your.trace = sameYour.trace;
+        attackLogs.same.your.roster = yourFinal;
+        attackLogs.same.your.attempts = {};
+        sameYour.attackers.forEach(unit => { attackLogs.same.your.attempts[unit.rank] = 5 - unit.attempts; });
 
-        $('yourCriticalGroupSize').textContent = yourAnalysis.criticalGroupSize;
-        $('yourCriticalAttackerPower').textContent = yourAnalysis.criticalAttackerPower;
-        $('yourEnemySpread').textContent = yourAnalysis.defenderSpread;
-        $('yourCriticalTargetTier').textContent = yourAnalysis.criticalTargetTier;
+        attackLogs.same.enemy.trace = sameEnemy.trace;
+        attackLogs.same.enemy.roster = enemyFinal;
+        attackLogs.same.enemy.attempts = {};
+        sameEnemy.attackers.forEach(unit => { attackLogs.same.enemy.attempts[unit.rank] = 5 - unit.attempts; });
 
-        $('enemyCriticalGroupSize').textContent = enemyAnalysis.criticalGroupSize;
-        $('enemyCriticalAttackerPower').textContent = enemyAnalysis.criticalAttackerPower;
-        $('enemyYourSpread').textContent = enemyAnalysis.defenderSpread;
-        $('enemyCriticalTargetTier').textContent = enemyAnalysis.criticalTargetTier;
+        $('yourSimResets').textContent = greaterYour.resets;
+        $('yourSimScore').textContent = greaterYour.score;
+        $('enemySimResets').textContent = greaterEnemy.resets;
+        $('enemySimScore').textContent = greaterEnemy.score;
 
-        updateStatus('Building distribution charts...', 'ready');
+        $('yourSimResets2').textContent = sameYour.resets;
+        $('yourSimScore2').textContent = sameYour.score;
+        $('enemySimResets2').textContent = sameEnemy.resets;
+        $('enemySimScore2').textContent = sameEnemy.score;
 
-        createLineChart(yourFinal, enemyFinal, 'yourChart', true);
-        createLineChart(enemyFinal, yourFinal, 'enemyChart', false);
+        updateStatus('Building plots...','ready');
+        createLineChart(yourFinal,enemyFinal,'yourChart',true);
+        createLineChart(enemyFinal,yourFinal,'enemyChart',false);
 
-        updateStatus('Running battle simulation...', 'ready');
+        drawAttackPlot(greaterYour.trace,yourFinal,enemyFinal,'yourAttackChart',true);
+        drawAttackPlot(greaterEnemy.trace,enemyFinal,yourFinal,'enemyAttackChart',false);
 
-        const yourBattle = simulateBattle(yourFinal, enemyFinal);
-        const enemyBattle = simulateBattle(enemyFinal, yourFinal);
+        drawAttackPlot(sameYour.trace,yourFinal,enemyFinal,'samePowerYourAttackChart',true);
+        drawAttackPlot(sameEnemy.trace,enemyFinal,yourFinal,'samePowerEnemyAttackChart',false);
 
-        $('yourSimResets').textContent = yourBattle.resets;
-        $('yourSimScore').textContent = yourBattle.score;
-        $('enemySimResets').textContent = enemyBattle.resets;
-        $('enemySimScore').textContent = enemyBattle.score;
+        populateAttackLogs();
 
-        updateStatus('✅ Simulation complete!', 'success');
-
-      } catch (error) {
-        updateStatus('❌ Error: ' + error.message, 'error');
-        console.error(error);
+        updateStatus('✅ Simulation complete!','success');
+      } catch(e){
+        updateStatus('❌ Error: '+e.message,'error');
+        console.error(e);
       }
     }
 
     initializeInputs();
+    populateAttackLogs();
   </script>
 </body>
 </html>
