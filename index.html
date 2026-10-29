@@ -198,16 +198,17 @@
       <p>1️⃣ <strong>Direct Entry:</strong> Use the top row to enter comma-separated power values (e.g., "600t, 100t, 15t, 5t, 5t, 3t")</p>
       <p>2️⃣ <strong>Count Entry:</strong> Toggle the tier buttons to reveal count inputs for each tier</p>
       <p>⚠️ <strong>Note:</strong> If the top row has values, all other inputs are ignored. Non-exact values are automatically converted to the next lower tier.</p>
-      <p>📝 <strong>Update log v1.1 - updated critical tier, updated simulated battle (added greater power simulation where same power is 50%, and same power simulation)</strong></p>
+      <p>📝 <strong>Update log v1.1</strong> - updated critical tier, updated simulated battle (added greater power simulation where same power is 50%, and same power simulation)</p>
+      <p>📝 <strong>Update log v1.2</strong> - updated critical tier, battle simulation bug fix</p>
     </div>
 
     <div class="filter-wrap">
       <h3>⚙️ Power Tier Count Inputs</h3>
       <div class="filter-buttons">
-        <button class="filter-btn" onclick="toggleTierSection('t',this)">Trillions (T)</button>
-        <button class="filter-btn" onclick="toggleTierSection('b',this)">Billions (B)</button>
-        <button class="filter-btn" onclick="toggleTierSection('m',this)">Millions (M)</button>
-        <button class="filter-btn" onclick="toggleTierSection('k',this)">Thousands (K)</button>
+        <button class="filter-btn" onclick="toggleTierSection('t',this)">Quadrillions (q), Trillions (t)</button>
+        <button class="filter-btn" onclick="toggleTierSection('b',this)">Billions (b)</button>
+        <button class="filter-btn" onclick="toggleTierSection('m',this)">Millions (m)</button>
+        <button class="filter-btn" onclick="toggleTierSection('k',this)">Thousands (k)</button>
       </div>
     </div>
 
@@ -265,14 +266,14 @@
           <div class="result-label">Power Distribution (Cumulative Count)</div>
           <div class="chart-box" id="yourChart"><svg class="chart-svg" viewBox="0 0 800 250" preserveAspectRatio="xMidYMid meet"></svg></div>
 
-          <div class="result-label">🔴 Critical Members (Leader Tier)</div>
-          <div class="analysis-box critical"><div class="analysis-title">⭐ CRITICAL / LEADER</div><div id="yourCriticalMembers">Members to be determined...</div></div>
+          <div class="result-label">🔴 Critical Members (Reset Duty)</div>
+          <div class="analysis-box critical"><div class="analysis-title">⭐ Critical / Reset</div><div id="yourCriticalMembers">Members to be determined...</div></div>
 
-          <div class="result-label">🟢 Viable Members (Can Attack)</div>
-          <div class="analysis-box viable"><div class="analysis-title">✅ VIABLE</div><div id="yourViableMembers">Members to be determined...</div></div>
+          <div class="result-label">🟢 Viable Minions (Main Attack)</div>
+          <div class="analysis-box viable"><div class="analysis-title">✅ Minions</div><div id="yourViableMembers">Members to be determined...</div></div>
 
-          <div class="result-label">🔵 Non-Viable Members</div>
-          <div class="analysis-box non-viable"><div class="analysis-title">❌ NON-VIABLE</div><div id="yourNonViableMembers">Members to be determined...</div></div>
+          <div class="result-label">🔵 Non (Emotional Support)</div>
+          <div class="analysis-box non-viable"><div class="analysis-title">❌ Tsk</div><div id="yourNonViableMembers">Members to be determined...</div></div>
         </div>
 
         <div class="analysis-side enemy-clan-side">
@@ -286,14 +287,14 @@
           <div class="result-label">Power Distribution (Cumulative Count)</div>
           <div class="chart-box" id="enemyChart"><svg class="chart-svg" viewBox="0 0 800 250" preserveAspectRatio="xMidYMid meet"></svg></div>
 
-          <div class="result-label">🔴 Critical Members (Leader Tier)</div>
-          <div class="analysis-box critical"><div class="analysis-title">⭐ CRITICAL / LEADER</div><div id="enemyCriticalMembers">Members to be determined...</div></div>
+          <div class="result-label">🔴 Critical Members (Reset Duty)</div>
+          <div class="analysis-box critical"><div class="analysis-title">⭐ Critical / Reset</div><div id="enemyCriticalMembers">Members to be determined...</div></div>
 
-          <div class="result-label">🟢 Viable Members (Can Attack)</div>
-          <div class="analysis-box viable"><div class="analysis-title">✅ VIABLE</div><div id="enemyViableMembers">Members to be determined...</div></div>
+          <div class="result-label">🟢 Viable Minions (Main Attack)</div>
+          <div class="analysis-box viable"><div class="analysis-title">✅ Minions</div><div id="enemyViableMembers">Members to be determined...</div></div>
 
-          <div class="result-label">🔵 Non-Viable Members</div>
-          <div class="analysis-box non-viable"><div class="analysis-title">❌ NON-VIABLE</div><div id="enemyNonViableMembers">Members to be determined...</div></div>
+          <div class="result-label">🔵 Non (Emotional Support)</div>
+          <div class="analysis-box non-viable"><div class="analysis-title">❌ Tsk</div><div id="enemyNonViableMembers">Members to be determined...</div></div>
         </div>
       </div>
     </div>
@@ -642,7 +643,7 @@ function getCriticalPlotIndices(attackerRoster, defenderRoster){
     const attackerCount = attackerData[i].cumulative;
     const defenderCount = defenderData[i]?.cumulative ?? 0;
     if (attackerCount <= defenderCount + 1) {
-      green = i;
+      green = i + 1;
       break;
     }
   }
@@ -689,7 +690,8 @@ function findCriticalTier(attackerRoster, defenderRoster){
       if(!roster.length) return {critical:[],viable:[],nonViable:[],criticalGroupSize:0,criticalTier:'-',enemySpread:0};
 
       const defenderSpread=getDefenderCount(defenderRoster.length);
-      const defenders=defenderRoster.slice(-defenderSpread);
+      const resetPoints = 50 - defenderRoster.length + defenderSpread;
+      const defenders=defenderRoster.slice();
       if(!defenders.length) return {critical:[],viable:[],nonViable:roster,criticalGroupSize:0,criticalTier:'-',enemySpread:0};
 
       const weakestDefender=defenders[defenders.length-1].value;
@@ -725,7 +727,8 @@ function createLineChart(attackerRoster, defenderRoster, containerId, isYourClan
   }
 
   const defenderSpread = getDefenderCount(defenderRoster.length);
-  const defenders = defenderRoster.slice(-defenderSpread);
+  const resetPoints = 50 - defenderRoster.length + defenderSpread;
+  const defenders = defenderRoster.slice();
   const minValue = Math.min(...attackerRoster.map(m => m.value), ...defenders.map(d => d.value));
   const maxValue = Math.max(...attackerRoster.map(m => m.value), ...defenders.map(d => d.value));
   const attackerData = buildCumulativeData(attackerRoster, minValue, maxValue);
@@ -1008,7 +1011,6 @@ function createLineChart(attackerRoster, defenderRoster, containerId, isYourClan
 function getAttackOrder(attackers){
   return attackers.slice().sort((a, b) => {
     if (a.value !== b.value) return a.value - b.value;
-    if (a.rank !== b.rank) return a.rank - b.rank;
     return a.score - b.score;
   });
 }
@@ -1025,98 +1027,100 @@ function isAttackerNonViable(attacker, defenders){
   return attacker.value <= weakestDefender;
 }
 
-function isTargetAllowed(attacker, defender, mode, phase, criticalThreshold){
-  if (isSamePowerAllowed(mode, phase) && defender.value === attacker.value) return true;
+function isTargetAllowed(attacker, defender, mode, phase, criticalThreshold, resetPoints){
+  if (!defender || !defender.available) return false;
 
-  if (attacker.value >= criticalThreshold && defender.value < criticalThreshold && (phase === 'phase2' || phase === 'phase4')) {
+  const attackerPower = attacker.value;
+  const defenderPower = defender.value;
+  const defenderScore = defender.score;
+
+  // Hard rule: never attack a stronger defender
+  if (defenderPower > attackerPower) return false;
+
+  // Reset score check should not override power
+  if (defenderScore > resetPoints) return false;
+
+  // critical phase special rules, don't waste critical attacks
+  if (
+    attackerPower >= criticalThreshold &&
+    defenderPower < criticalThreshold &&
+    (phase === 'phase1' || phase === 'phase3')
+  ) {
     return false;
   }
 
-  if (defender.value > attacker.value) return false;
+  if (defenderPower === attackerPower && !isSamePowerAllowed(mode, phase)) {
+    return false;
+  }
+
   return true;
 }
 
-function getValidTargets(attacker, defenders, phase, criticalThreshold, mode){
-  const viableTargets = defenders.filter(d => d.available && isTargetAllowed(attacker, d, mode, phase, criticalThreshold));
-
-  const lowerPower = viableTargets
-    .filter(d => d.value < attacker.value)
-    .sort((a, b) => b.value - a.value || b.score - a.score || a.rank - b.rank);
-
-  const samePower = viableTargets
-    .filter(d => d.value === attacker.value)
-    .sort((a, b) => b.value - a.value || b.score - a.score || a.rank - b.rank);
-
-  if (!isAttackerNonViable(attacker, defenders)) {
-    return [...lowerPower, ...samePower];
-  }
-
-  return [...samePower, ...lowerPower];
+function getValidTargets(attacker, defenders, phase, criticalThreshold, mode, resetPoints){
+  return defenders
+    .filter(d => d.available && isTargetAllowed(attacker, d, mode, phase, criticalThreshold, resetPoints))
+    .sort((a, b) => b.value - a.value || b.score - a.score );
 }
 
-function resolveAttack(attacker, defender, mode, phase){
-  if (defender.value < attacker.value) {
+function resolveAttack(attacker, defender, mode, phase) {
+  const attackerPower = attacker.value;
+  const defenderPower = defender.value;
+
+  if (defenderPower < attackerPower) {
     return { success: true, reward: defender.score };
   }
 
-  if (mode === 'same' && defender.value === attacker.value) {
+  if (mode === 'same' && defenderPower === attackerPower) {
     return { success: true, reward: defender.score };
   }
 
-  if (mode === 'greater' && defender.value === attacker.value && (phase === 'phase3' || phase === 'phase4')) {
-    const success = Math.random() < 0.5;
-    return { success, reward: success ? defender.score : 0 };
+  if (
+    mode === 'greater' &&
+    defenderPower === attackerPower &&
+    (phase === 'phase3' || phase === 'phase4')
+  ) {
+    return {
+      success: Math.random() > 0.5,
+      reward: defender.score
+    };
   }
 
   return { success: false, reward: 0 };
 }
 
-function runSimPhase(attackers, defenders, phase, criticalThreshold, mode, trace, scoreRef, resetsRef){
+function runSimPhase(attackers, defenders, phase, criticalThreshold, mode, trace, scoreRef, resetsRef, resetPoints){
   let actionTaken = false;
-  let RNG = Math.random();
 
   for (const attacker of getAttackOrder(attackers.filter(a => a.attempts < 5))) {
     if (attacker.attempts >= 5) continue;
 
-    const candidates = getValidTargets(attacker, defenders, phase, criticalThreshold, mode);
+    const candidates = getValidTargets(attacker, defenders, phase, criticalThreshold, mode, resetPoints);
     if (!candidates.length) continue;
 
     const defender = candidates[0];
     const result = resolveAttack(attacker, defender, mode, phase);
+    
+    if (!result.success) {
+      if (result.reward > 0) {
+        trace.push({ attackerRank: attacker.rank, defenderRank: defender.rank, result: 'MISS', reset: false });
+        attacker.attempts += 1;
+        actionTaken = true;
+      }
+      continue;
+    }
 
     attacker.attempts += 1;
     actionTaken = true;
 
-    const samePowerFallbackHit =
-      mode === 'greater' &&
-      defender.value === attacker.value &&
-      (phase === 'phase3' || phase === 'phase4') &&
-      result.success;
+    defender.available = false;
+    scoreRef.value += result.reward;
+    trace.push({ attackerRank: attacker.rank, defenderRank: defender.rank, result: 'HIT', reset: false });
 
-    const standardHit =
-      defender.value < attacker.value ||
-      (mode === 'same' && defender.value === attacker.value) ||
-      samePowerFallbackHit;
-
-    if (standardHit) {
-      defender.available = false;
-      scoreRef.value += result.reward;
-      trace.push({ attackerRank: attacker.rank, defenderRank: defender.rank, result: 'HIT', reset: false });
-
-      if (defenders.every(d => !d.available)) {
-        defenders.forEach(d => d.available = true);
-        resetsRef.value += 1;
-        if (trace.length) trace[trace.length - 1].reset = true;
-      }
-    } else {
-      RNG = Math.random();
-      if (RNG > 0.5) {
-        defender.available = false;
-        scoreRef.value += result.reward;
-        trace.push({ attackerRank: attacker.rank, defenderRank: defender.rank, result: 'HIT', reset: false });
-      } else {
-        trace.push({ attackerRank: attacker.rank, defenderRank: defender.rank, result: 'MISS', reset: false });
-      }
+    //if (defenders.every(d => !d.available)) {
+    if (defenders.filter(d => d.available).length <= (50 - resetPoints)) {
+      defenders.forEach(d => d.available = true);
+      resetsRef.value += 1;
+      if (trace.length) trace[trace.length - 1].reset = true;
     }
   }
 
@@ -1129,7 +1133,8 @@ function simulateBattle1(attackerRoster, defenderRoster){
     .map((unit, index) => ({ ...unit, rank: index + 1, attempts: 0, available: true }));
 
   const defenderSpread = getDefenderCount(defenderRoster.length);
-  const defenders = defenderRoster.slice(-defenderSpread)
+  const resetPoints = 50 - defenderRoster.length + defenderSpread;
+  const defenders = defenderRoster.slice()
     .sort((a, b) => b.value - a.value || b.score - a.score)
     .map((unit, index) => ({ ...unit, rank: index + 1, available: true }));
 
@@ -1139,6 +1144,7 @@ function simulateBattle1(attackerRoster, defenderRoster){
   const resetsRef = { value: 0 };
 
   let guard = 0;
+  let loopAgain = false;
   while (guard < 20000) {
     guard += 1;
 
@@ -1147,29 +1153,40 @@ function simulateBattle1(attackerRoster, defenderRoster){
 
     let anyActionThisCycle = false;
 
-    const phase1Possible = remaining.some(a => getValidTargets(a, defenders, 'phase1', criticalThreshold, 'greater').length > 0);
+    const phase1Possible = remaining.some(a => getValidTargets(a, defenders, 'phase1', criticalThreshold, 'greater', resetPoints).length > 0);
     if (phase1Possible) {
-      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase1', criticalThreshold, 'greater', trace, scoreRef, resetsRef) || anyActionThisCycle;
+      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase1', criticalThreshold, 'greater', trace, scoreRef, resetsRef, resetPoints) || anyActionThisCycle;
+      continue;
     }
 
-    const phase2Possible = remaining.some(a => a.value >= criticalThreshold && getValidTargets(a, defenders, 'phase2', criticalThreshold, 'greater').length > 0);
-    const lowerPowerStillHasPhase1 = remaining.some(a => a.value < criticalThreshold && getValidTargets(a, defenders, 'phase1', criticalThreshold, 'greater').length > 0);
+    const phase2Possible = remaining.some(a => a.value >= criticalThreshold && getValidTargets(a, defenders, 'phase2', criticalThreshold, 'greater', resetPoints).length > 0);
+    const lowerPowerStillHasPhase1 = remaining.some(a => a.value < criticalThreshold && getValidTargets(a, defenders, 'phase1', criticalThreshold, 'greater', resetPoints).length > 0);
 
     if (!lowerPowerStillHasPhase1 && phase2Possible) {
-      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase2', criticalThreshold, 'greater', trace, scoreRef, resetsRef) || anyActionThisCycle;
+      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase2', criticalThreshold, 'greater', trace, scoreRef, resetsRef, resetPoints) || anyActionThisCycle;
+      continue;
     }
 
-    const phase3Possible = remaining.some(a => getValidTargets(a, defenders, 'phase3', criticalThreshold, 'greater').length > 0);
+    const phase3Possible = remaining.some(a => getValidTargets(a, defenders, 'phase3', criticalThreshold, 'greater', resetPoints).length > 0);
     if (phase3Possible) {
-      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase3', criticalThreshold, 'greater', trace, scoreRef, resetsRef) || anyActionThisCycle;
+      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase3', criticalThreshold, 'greater', trace, scoreRef, resetsRef, resetPoints) || anyActionThisCycle;
+      continue;
     }
 
-    const phase4Possible = remaining.some(a => a.value >= criticalThreshold && getValidTargets(a, defenders, 'phase4', criticalThreshold, 'greater').length > 0);
+    const phase4Possible = remaining.some(a => a.value >= criticalThreshold && getValidTargets(a, defenders, 'phase4', criticalThreshold, 'greater', resetPoints).length > 0);
     if (phase4Possible) {
-      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase4', criticalThreshold, 'greater', trace, scoreRef, resetsRef) || anyActionThisCycle;
+      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase4', criticalThreshold, 'greater', trace, scoreRef, resetsRef, resetPoints) || anyActionThisCycle;
+      continue;
     }
 
-    if (!anyActionThisCycle) break;
+    if (!anyActionThisCycle) {
+      if (!loopAgain) {
+        anyActionThisCycle = true;
+        loopAgain = true;
+      } else {
+        break;
+      }
+    }
   }
 
   let finalScore = 0;
@@ -1188,17 +1205,14 @@ function simulateBattle1(attackerRoster, defenderRoster){
   return { score: finalScore, resets: finalResets, trace, attackers, defenders, roster: attackerRoster };
 }
 
-function simulateBattle(attackerRoster, defenderRoster){
-  return simulateBattle1(attackerRoster, defenderRoster);
-}
-
 function simulateBattle2(attackerRoster, defenderRoster){
   const attackers = attackerRoster.slice()
     .sort((a, b) => b.value - a.value || b.score - a.score)
     .map((unit, index) => ({ ...unit, rank: index + 1, attempts: 0, available: true }));
 
   const defenderSpread = getDefenderCount(defenderRoster.length);
-  const defenders = defenderRoster.slice(-defenderSpread)
+  const resetPoints = 50 - defenderRoster.length + defenderSpread;
+  const defenders = defenderRoster.slice()
     .sort((a, b) => b.value - a.value || b.score - a.score)
     .map((unit, index) => ({ ...unit, rank: index + 1, available: true }));
 
@@ -1208,6 +1222,7 @@ function simulateBattle2(attackerRoster, defenderRoster){
   const resetsRef = { value: 0 };
 
   let guard = 0;
+  let loopAgain = false;
   while (guard < 20000) {
     guard += 1;
 
@@ -1216,19 +1231,29 @@ function simulateBattle2(attackerRoster, defenderRoster){
 
     let anyActionThisCycle = false;
 
-    const phase1Possible = remaining.some(a => getValidTargets(a, defenders, 'phase1', criticalThreshold, 'same').length > 0);
+    const phase1Possible = remaining.some(a => getValidTargets(a, defenders, 'phase1', criticalThreshold, 'same', resetPoints).length > 0);
     if (phase1Possible) {
-      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase1', criticalThreshold, 'same', trace, scoreRef, resetsRef) || anyActionThisCycle;
+      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase1', criticalThreshold, 'same', trace, scoreRef, resetsRef, resetPoints) || anyActionThisCycle;
+      continue;
     }
 
-    const phase2Possible = remaining.some(a => a.value >= criticalThreshold && getValidTargets(a, defenders, 'phase2', criticalThreshold, 'same').length > 0);
-    const lowerPowerStillHasPhase1 = remaining.some(a => a.value < criticalThreshold && getValidTargets(a, defenders, 'phase1', criticalThreshold, 'same').length > 0);
+    const phase2Possible = remaining.some(a => a.value >= criticalThreshold && getValidTargets(a, defenders, 'phase2', criticalThreshold, 'same', resetPoints).length > 0);
+    const lowerPowerStillHasPhase1 = remaining.some(a => a.value < criticalThreshold && getValidTargets(a, defenders, 'phase1', criticalThreshold, 'same', resetPoints).length > 0);
 
     if (!lowerPowerStillHasPhase1 && phase2Possible) {
-      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase2', criticalThreshold, 'same', trace, scoreRef, resetsRef) || anyActionThisCycle;
+      anyActionThisCycle = runSimPhase(attackers, defenders, 'phase2', criticalThreshold, 'same', trace, scoreRef, resetsRef, resetPoints) || anyActionThisCycle;
+      continue;
     }
 
-    if (!anyActionThisCycle) break;
+    if (!anyActionThisCycle) {
+      if (!loopAgain) {
+        anyActionThisCycle = true;
+        loopAgain = true;
+      } else {
+        break;
+      }
+    }
+
   }
 
   let finalScore = 0;
